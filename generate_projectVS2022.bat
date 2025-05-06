@@ -1,0 +1,3 @@
+echo off
+echo Generating Visual Studio project files...
+premake5.exe vs2022
