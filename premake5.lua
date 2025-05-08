@@ -1,7 +1,32 @@
+---@diagnostic disable: undefined-global
+
 workspace "bounty_of_two"
-    configurations { "Debug", "Release" }
+    configurations { "debug", "release" }
     architecture "x86_64"
     location "build"
+
+
+project "imgui"
+    kind "StaticLib"
+    language "C++"
+    cppdialect "c++23"
+    targetdir "bin/%{cfg.buildcfg}"
+
+    files {
+        "include/imgui/imgui.cpp",
+        "include/imgui/imgui_draw.cpp",
+        "include/imgui/imgui_tables.cpp",
+        "include/imgui/imgui_widgets.cpp",
+        "include/imgui/imgui_demo.cpp",
+    }
+    includedirs { "include/imgui" }
+
+    filter "configurations:debug"
+        symbols "On"
+
+    filter "configurations:release"
+        optimize "Speed"
+
 
 project "bounty_of_two"
     kind "ConsoleApp"
@@ -9,8 +34,19 @@ project "bounty_of_two"
     cppdialect "c++23"
     targetdir "bin/%{cfg.buildcfg}"
 
-    files { "src/**.cpp", "src/**.hpp", "include/**.hpp", "include/**.h", "include/**.cpp" }
+    -- need to include the headers files
+    -- or visual studio won't show them at all
+    files { 
+        "src/**.cpp",
+        "src/**.hpp",
+        "include/**.hpp",
+        "include/**.h",
+        "include/imgui/rlImGui.cpp" 
+    }
     includedirs { "include/imgui", "include/raylib" }
+
+
+    links { "imgui" }
 
     filter { "system:windows", "action:vs*" }
         includedirs { "include/raylib/msvc" }
@@ -21,11 +57,17 @@ project "bounty_of_two"
     filter { "system:windows", "toolset:gcc" }
         includedirs { "include/raylib/mingw" }
         libdirs { "libs/mingw" }
-        links { "raylib", "winmm", "gdi32",  }
+        links { "raylib", "winmm", "gdi32"  }
         defines { "_WINDOWS" }
 
-    filter "configurations:Debug"
+    filter { "system:linux" }
+        includedirs { "include/raylib/linux" }
+        libdirs { "libs/linux" }
+        links { "raylib", "pthread", "dl", "rt" }
+        defines { "_LINUX" }
+
+    filter "configurations:debug"
         symbols "On"
 
-    filter "configurations:Release"
-        optimize "On"
+    filter "configurations:release"
+        optimize "Speed"
