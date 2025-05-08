@@ -63,7 +63,7 @@ project "bounty_of_two"
     filter { "system:linux" }
         includedirs { "include/raylib/linux" }
         libdirs { "libs/linux" }
-        links { "raylib", "pthread", "dl", "libm", "rt" }
+        links { "raylib", "pthread", "dl", "rt" }
         defines { "_LINUX" }
 
     filter "configurations:debug"
