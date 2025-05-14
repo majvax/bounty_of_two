@@ -11,6 +11,5 @@ jobs:
       - name: cppcheck
         uses: deep5050/cppcheck-action@v3.0
         with:
-          path: 'src/'
-          args: '--std=c++23'
+          args: '--std=c++23 src/'
           github_token: ${{ secrets.GITHUB_TOKEN }}
