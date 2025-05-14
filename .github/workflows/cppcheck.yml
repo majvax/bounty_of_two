@@ -11,5 +11,12 @@ jobs:
       - name: cppcheck
         uses: deep5050/cppcheck-action@v3.0
         with:
-          args: '--std=c++23 src/'
+          std:  c++23
+          exclude_check: ./include/
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: publish report    
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: cppcheck-report
+          path: cppcheck_report.txt
