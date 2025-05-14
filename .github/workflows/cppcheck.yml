@@ -1,0 +1,16 @@
+name: cppcheck-action
+
+on: [push, pull_request]
+
+jobs:
+  cppcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: cppcheck
+        uses: deep5050/cppcheck-action@v3.0
+        with:
+          path: 'src/'
+          args: '--std=c++23'
+          github_token: ${{ secrets.GITHUB_TOKEN }}
