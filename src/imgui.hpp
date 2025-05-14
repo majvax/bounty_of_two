@@ -9,7 +9,7 @@ namespace ImGui
     private:
 		bool m_begin = false;
     public:
-        Context(bool darkTheme)
+        explicit Context(bool darkTheme)
         {
 			::rlImGuiSetup(darkTheme);
         }

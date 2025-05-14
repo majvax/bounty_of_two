@@ -1,5 +1,7 @@
 @echo off
-cd ..\..\
 
+if exist "..\..\tools" (
+    cd "..\..\"
+)
 rd /S /Q build
 rd /s /Q bin
