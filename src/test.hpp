@@ -1,3 +1,14 @@
-// test juste pour qu'on commit là voila
-// gros caca de leny 
-//r
+
+
+
+class Test
+{
+    int a;
+    int b;
+public:
+
+    int add()
+    {
+        return a + b;
+    };
+};
