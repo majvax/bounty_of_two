@@ -1,6 +1,6 @@
 name: cppcheck-action
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   cppcheck:
