@@ -1,6 +1,5 @@
 #pragma once
-#include "raylib.h"
-#include "Player.h"
+#include "Player.hpp"
 #include "base.hpp"
 class Player;
 
