@@ -1,18 +1,19 @@
-
 #include "scene.hpp"
+#include <ranges>
+
 
 Scene::Scene() {}
 
 void Scene::update(float deltaTime) {
-	for (int eid = 0; eid < entities.size(); eid++) {
-		entities[eid]->process(deltaTime);
-	}
+	for (auto& entity : entities) {
+        entity->update(deltaTime);
+    }
 }
 
-void Scene::draw() {
-	for (int eid = 0; eid < entities.size(); eid++) {
-		entities[eid]->draw();
-	}
+void Scene::draw() const {
+	for (const auto& entity : entities) {
+        entity->draw();
+    }
 }
 
 void Scene::add_entity(EntityBase* entity) {
@@ -20,10 +21,8 @@ void Scene::add_entity(EntityBase* entity) {
 }
 
 void Scene::remove_entity(EntityBase* entity) {
-	for (int eid = 0; eid < entities.size(); eid++) {
-		if (entities[eid] == entity){
-			entities.erase(std::next(entities.begin(), eid));
-			return; // only delete one entity at a time here
-		};
-	}
+	auto it = std::ranges::find(entities, entity);
+    if (it != entities.end()) {
+        entities.erase(it);
+    }
 }

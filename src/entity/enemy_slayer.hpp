@@ -15,8 +15,8 @@ public:
     EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, Color color = RED);
 
     void SetTarget(Player* player);
-    void process(float deltaTime);
-    void draw() const;
+    void update(float deltaTime) override;
+    void draw() const override;
     Vector2 GetPosition() const;
     float GetSize() const;
 

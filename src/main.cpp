@@ -1,7 +1,7 @@
 #include "entity/enemy_slayer.hpp"
 #include "entity/player.hpp"
 #include "imgui.hpp"
-#include "../include/raylib/raylib-cpp.hpp"
+#include "raylib-cpp.hpp"
 #include "scene/scene.hpp"
 #include <cstdint>
 

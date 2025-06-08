@@ -13,8 +13,8 @@ private:
 public:
     Player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
 
-    void process(float deltaTime);
-    void draw() const;
+    void update(float deltaTime) override;
+    void draw() const override;
     Vector2 GetPosition() const;
     float GetSize() const;
 

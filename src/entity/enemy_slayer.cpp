@@ -26,7 +26,7 @@ void EnemySlayer::SetTarget(Player* player) {
     this->player = player;
 }
 
-void EnemySlayer::process(float deltaTime) {
+void EnemySlayer::update(float deltaTime) {
     Vector2 target = player->GetPosition();
     Vector2 direction = { target.x - position.x, target.y - position.y };
 

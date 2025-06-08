@@ -9,5 +9,5 @@ public:
 	void add_entity(EntityBase* entity);
 	void remove_entity(EntityBase* entity);
 	void update(float deltaTime);
-	void draw();
+	void draw() const;
 };

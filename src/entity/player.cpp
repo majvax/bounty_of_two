@@ -4,7 +4,7 @@ Player::Player(float x, float y, float speed, float size, Color color)
     : position{ x, y }, speed(speed), size(size), color(color), health(5) {
 }
 
-void Player::process(float deltaTime) {
+void Player::update(float deltaTime) {
     if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
     if (IsKeyDown(KEY_LEFT))  position.x -= speed * deltaTime;
     if (IsKeyDown(KEY_UP))    position.y -= speed * deltaTime;
