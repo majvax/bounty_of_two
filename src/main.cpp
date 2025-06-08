@@ -24,19 +24,19 @@ int main()
 	window.SetTargetFPS(120);
 
 	Scene scene = Scene();
-	auto player = std::make_unique<Player>(window.GetWidth()/2.0, window.GetHeight()/2.0);
-	scene.add_entity(player.get());
+	scene.add_entity(std::make_unique<Player>(window.GetWidth()/2.0, window.GetHeight()/2.0));
 
-	EnemySlayer slayer = EnemySlayer(window.GetWidth(),  window.GetHeight());
-	slayer.SetTarget(player.get());
-	scene.add_entity(&slayer);
+	auto slayer = std::make_unique<EnemySlayer>(window.GetWidth(),  window.GetHeight());
+	slayer->SetTarget(scene.get_player());
+    // move the slayer ownership to the scene
+	scene.add_entity(std::move(slayer));
 
 
-	ImGui::Context ctx(true, player.get(), &scene, &window);
+	ImGui::Context ctx(true, scene.get_player(), &scene, &window);
 
     // Ugly af, the menu should definitlely be added in the scene constructor
-    scene.add_menu(new FPSCounter());
-    scene.add_menu(new PlayerMenu());
+    scene.add_menu(std::make_unique<FPSCounter>());
+    scene.add_menu(std::make_unique<PlayerMenu>());
 
 
 	while (!window.ShouldClose())

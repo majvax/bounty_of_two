@@ -3,6 +3,7 @@
 #include <algorithm>
 #include "../imgui/imgui.hpp"
 #include "../imgui/menu.hpp"
+#include "../helper/assert.hpp"
 
 Scene::Scene() {}
 
@@ -26,24 +27,42 @@ void Scene::draw(ImGui::Context& ctx) const {
     }
 }
 
-void Scene::add_entity(EntityBase* entity) {
-	entities.push_back(entity);
+
+void Scene::add_entity(std::unique_ptr<EntityBase> entity) {
+    // Moving the ownership of the entity into the vector
+    ASSERT_PTR(entity, "Entity must not be null");
+    entities.push_back(std::move(entity));
 }
 
 void Scene::remove_entity(EntityBase* entity) {
-	auto it = std::ranges::find(entities, entity);
+    ASSERT_PTR(entity, "Entity must not be null");
+    auto it = std::ranges::find_if(entities, [entity](const auto& ptr) {
+        return ptr.get() == entity;
+    });
     if (it != entities.end()) {
         entities.erase(it);
     }
 }
 
-void Scene::add_menu(MenuBase* menu) {
-    menus.push_back(menu);
+
+void Scene::add_menu(std::unique_ptr<MenuBase> menu) {
+    ASSERT_PTR(menu, "Menu must not be null");
+    menus.push_back(std::move(menu));
 }
 
 void Scene::remove_menu(MenuBase* menu) {
-    auto it = std::ranges::find(menus, menu);
+    ASSERT_PTR(menu, "Entity must not be null");
+    auto it = std::ranges::find_if(menus, [menu](const auto& ptr) {
+        return ptr.get() == menu;
+    });
     if (it != menus.end()) {
         menus.erase(it);
     }
+}
+
+
+Player* Scene::get_player() const {
+    // Assuming the first entity is always the player
+    if (entities.empty()) return nullptr;
+    return static_cast<Player*>(entities.front().get());
 }
