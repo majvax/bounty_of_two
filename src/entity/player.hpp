@@ -9,7 +9,8 @@ private:
     float size;
     Color color;
     int health;
-
+    float crit_chance;
+    float crit_multiplier;
 public:
     Player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
 
@@ -21,6 +22,10 @@ public:
     void TakeDamage(int amount);
     bool IsDead() const;
     int GetHealth() const;
+    float GetSpeed() const;
+    float GetCritChance() const;
+    float GetCritMultiplier() const;
+
 
     void Reset(float x, float y);
 };

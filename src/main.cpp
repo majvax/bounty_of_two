@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <memory>
 #include "imgui/fpscounter.hpp"
+#include "imgui/player_gui.hpp"
 
 void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
 {
@@ -33,7 +34,9 @@ int main()
 
 	ImGui::Context ctx(true, player.get(), &scene, &window);
 
+    // Ugly af, the menu should definitlely be added in the scene constructor
     scene.add_menu(new FPSCounter());
+    scene.add_menu(new PlayerMenu());
 
 
 	while (!window.ShouldClose())
