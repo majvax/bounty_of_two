@@ -1,7 +1,8 @@
 #include "player.hpp"
 
 Player::Player(float x, float y, float speed, float size, Color color)
-    : position{ x, y }, speed(speed), size(size), color(color), health(5) {
+    : position{ x, y }, speed(speed), size(size), color(color), health(5), 
+      crit_chance(0.1f), crit_multiplier(2.0f) {
 }
 
 void Player::update(float deltaTime) {
@@ -34,6 +35,17 @@ bool Player::IsDead() const {
 
 int Player::GetHealth() const {
     return health;
+}
+float Player::GetSpeed() const {
+    return speed;
+}
+
+float Player::GetCritChance() const {
+    return crit_chance;
+}
+
+float Player::GetCritMultiplier() const {
+    return crit_multiplier;
 }
 
 void Player::Reset(float x, float y) {
