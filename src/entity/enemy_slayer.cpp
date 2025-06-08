@@ -1,7 +1,8 @@
 #include "enemy_slayer.hpp"
+#include "player.hpp"
 #include <cmath>
 
-EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, float speed, float size, Color color)
+EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, float speed, float size, raylib::Color color)
     : speed(speed), size(size), color(color), dead(false)
 {
     int side = GetRandomValue(0, 3);

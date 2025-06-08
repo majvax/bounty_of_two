@@ -1,71 +1,40 @@
 #include "entity/enemy_slayer.hpp"
 #include "entity/player.hpp"
-#include "imgui.hpp"
+#include "imgui/imgui.hpp"
 #include "raylib-cpp.hpp"
 #include "scene/scene.hpp"
 #include <cstdint>
-
-constexpr uint32_t NOEDIT_FLAGS = ImGuiWindowFlags_NoCollapse
-| ImGuiWindowFlags_NoSavedSettings
-| ImGuiWindowFlags_NoMove
-| ImGuiWindowFlags_NoResize
-| ImGuiWindowFlags_NoTitleBar;
-
-constexpr uint16_t WINDOW_WIDTH = 800;
-constexpr uint16_t WINDOW_HEIGHT = 600;
-
-
-void draw_imgui(raylib::Window& window, ImGui::Context& ctx)
-{
-	while (ctx.lock())
-	{
-		ImGui::SetNextWindowSize(ImVec2(100, 35), ImGuiCond_Once);
-		ImGui::Begin("FPS Counter", nullptr, NOEDIT_FLAGS);
-		ImGui::Text("FPS: %d", window.GetFPS());
-		ImGui::End();
-	}
-}
-
+#include <memory>
+#include "imgui/fpscounter.hpp"
 
 void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
 {
 	while (window.Drawing())
-	{
+    {
 		window.ClearBackground(raylib::Color::White());
-
-
-		// constexpr Vector2 size{ 20, 20 };
-		// static raylib::Color col = raylib::Color::Blue();
-		
-		// // Draw a square in the center of the screen
-		// col.DrawRectangle(
-		// 	{ window.GetWidth() / 2 - size.x / 2, window.GetHeight() / 2 - size.y / 2 },
-		// 	size
-		// );
-
-		scene.draw();
-
-
-		// draw the imgui window on top of everything
-		draw_imgui(window, ctx);
+		scene.draw(ctx);
 	}
 }
 
-
-
 int main()
 {
-	raylib::Window window(WINDOW_WIDTH, WINDOW_HEIGHT, "bounty of two");
+	raylib::Window window(0, 0, "bounty of two", FLAG_FULLSCREEN_MODE | FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
+
 	window.SetTargetFPS(120);
-	ImGui::Context ctx(true);
 
 	Scene scene = Scene();
-	Player player = Player(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0);
-	scene.add_entity(&player);
+	auto player = std::make_unique<Player>(window.GetWidth()/2.0, window.GetHeight()/2.0);
+	scene.add_entity(player.get());
 
-	EnemySlayer slayer = EnemySlayer(WINDOW_WIDTH, WINDOW_HEIGHT);
-	slayer.SetTarget(&player);
+	EnemySlayer slayer = EnemySlayer(window.GetWidth(),  window.GetHeight());
+	slayer.SetTarget(player.get());
 	scene.add_entity(&slayer);
+
+
+	ImGui::Context ctx(true, player.get(), &scene, &window);
+
+    scene.add_menu(new FPSCounter());
+
 
 	while (!window.ShouldClose())
 	{

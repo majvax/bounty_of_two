@@ -1,4 +1,4 @@
-
+#pragma once
 class EntityBase {
 public:
     virtual ~EntityBase() = default;    
