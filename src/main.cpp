@@ -60,7 +60,7 @@ int main()
 	ImGui::Context ctx(true);
 
 	Scene scene = Scene();
-	Player player = Player(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0); // juste un test, le prof va nous tuer sinon mdr
+	Player player = Player(WINDOW_WIDTH/2.0, WINDOW_HEIGHT/2.0);
 	scene.add_entity(&player);
 
 	EnemySlayer slayer = EnemySlayer(WINDOW_WIDTH, WINDOW_HEIGHT);
