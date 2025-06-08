@@ -27,6 +27,7 @@ if exist "%PREMAKE_PATH%" (
 )
 
 "%PREMAKE_PATH%" gmake
+"%PREMAKE_PATH%" export-compile-commands
 
 :setESC
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (

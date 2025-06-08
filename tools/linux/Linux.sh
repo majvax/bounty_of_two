@@ -23,3 +23,4 @@ else
 fi
 
 "$PREMAKE_PATH" gmake
+"$PREMAKE_PATH" export-compile-commands

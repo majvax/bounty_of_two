@@ -1,4 +1,6 @@
 ---@diagnostic disable: undefined-global
+require "tools/export-compile-commands"
+
 
 workspace "bounty_of_two"
     configurations { "debug", "release" }

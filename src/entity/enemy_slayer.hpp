@@ -1,5 +1,7 @@
 #pragma once
-#include "player.hpp"
+#include <raylib-cpp.hpp>
+#include "base.hpp"
+
 class Player;
 
 class EnemySlayer : public EntityBase {
@@ -12,7 +14,7 @@ private:
     Player* player;
 
 public:
-    EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, Color color = RED);
+    EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, raylib::Color color = raylib::Color::Red());
 
     void SetTarget(Player* player);
     void update(float deltaTime) override;
