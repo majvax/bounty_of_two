@@ -21,6 +21,10 @@ Vector2 Player::GetPosition() const {
     return position;
 }
 
+Vector2 Player::GetCenter() const {
+    return { position.x + size / 2.0f, position.y + size / 2.0f };
+}
+
 float Player::GetSize() const {
     return size;
 }

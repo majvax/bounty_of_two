@@ -17,6 +17,7 @@ public:
     void update(float deltaTime) override;
     void draw() const override;
     Vector2 GetPosition() const;
+    Vector2 GetCenter() const;
     float GetSize() const;
 
     void TakeDamage(int amount);
