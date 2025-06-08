@@ -19,7 +19,7 @@ void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
 
 int main()
 {
-	raylib::Window window(0, 0, "bounty of two", FLAG_FULLSCREEN_MODE | FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE);
+	raylib::Window window(0, 0, "bounty of two", FLAG_FULLSCREEN_MODE | FLAG_VSYNC_HINT | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
 
 	window.SetTargetFPS(120);
 

@@ -26,6 +26,11 @@ public:
     float GetCritChance() const;
     float GetCritMultiplier() const;
 
+    void SetSpeed(float new_speed);
+    void SetHealth(int new_health);
+    void SetSize(float new_size);
+    void SetCritChance(float new_chance);
+    void SetCritMultiplier(float new_multiplier);
 
     void Reset(float x, float y);
 };
