@@ -28,15 +28,20 @@ void EnemySlayer::SetTarget(Player* player) {
 }
 
 void EnemySlayer::update(float deltaTime) {
-    Vector2 target = player->GetPosition();
-    Vector2 direction = { target.x - position.x, target.y - position.y };
+    Vector2 target = player->GetCenter();
+    Vector2 center = { position.x + size / 2.0f, position.y + size / 2.0f };
+    Vector2 direction = { target.x - center.x, target.y - center.y };
 
     float length = sqrtf(direction.x * direction.x + direction.y * direction.y);
-    if (length != 0) {
-        direction.x /= length;
-        direction.y /= length;
+    if (length <= player->GetSize() / 1.5f) {
+        return; // Do not move if too close to the player
     }
 
+    // Normalize the direction vector
+    direction.x /= length;
+    direction.y /= length;
+
+    // Move the slayer towards the player
     position.x += direction.x * speed * deltaTime;
     position.y += direction.y * speed * deltaTime;
 }
