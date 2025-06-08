@@ -1,10 +1,10 @@
-#include "player.h"
+#include "player.hpp"
 
-player::player(float x, float y, float speed, float size, Color color)
+Player::Player(float x, float y, float speed, float size, Color color)
     : position{ x, y }, speed(speed), size(size), color(color), health(5) {
 }
 
-void Player::update(float deltaTime) {
+void Player::process(float deltaTime) {
     if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
     if (IsKeyDown(KEY_LEFT))  position.x -= speed * deltaTime;
     if (IsKeyDown(KEY_UP))    position.y -= speed * deltaTime;

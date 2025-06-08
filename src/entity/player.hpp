@@ -1,7 +1,8 @@
 #pragma once
+#include "base.hpp"
 #include "raylib.h"
 
-class player {
+class Player : public EntityBase {
 private:
     Vector2 position;
     float speed;
@@ -10,10 +11,10 @@ private:
     int health;
 
 public:
-    player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
+    Player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
 
-    void update(float deltaTime) override;
-    void draw() const override;
+    void process(float deltaTime);
+    void draw() const;
     Vector2 GetPosition() const;
     float GetSize() const;
 
