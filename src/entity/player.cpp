@@ -48,6 +48,27 @@ float Player::GetCritMultiplier() const {
     return crit_multiplier;
 }
 
+void Player::SetSpeed(float new_speed) {
+    speed = new_speed;
+}
+
+void Player::SetHealth(int new_health) {
+    health = new_health;
+}
+
+void Player::SetSize(float new_size) {
+    size = new_size;
+}
+
+void Player::SetCritChance(float new_chance) {
+    crit_chance = new_chance;
+}
+
+void Player::SetCritMultiplier(float new_multiplier) {
+    crit_multiplier = new_multiplier;
+}
+
+
 void Player::Reset(float x, float y) {
     position = { x, y };
     health = 5;

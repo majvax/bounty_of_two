@@ -70,6 +70,7 @@ project "bounty_of_two"
 
     filter "configurations:debug"
         symbols "On"
+        defines { "DEBUG" }
 
     filter "configurations:release"
         optimize "Speed"
