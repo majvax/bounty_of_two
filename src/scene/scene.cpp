@@ -51,7 +51,7 @@ void Scene::add_menu(std::unique_ptr<MenuBase> menu) {
 }
 
 void Scene::remove_menu(MenuBase* menu) {
-    ASSERT_PTR(menu, "Entity must not be null");
+    ASSERT_PTR(menu, "Menu must not be null");
     auto it = std::ranges::find_if(menus, [menu](const auto& ptr) {
         return ptr.get() == menu;
     });
