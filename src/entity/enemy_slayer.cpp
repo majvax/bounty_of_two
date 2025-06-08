@@ -1,4 +1,4 @@
-#include "enemy_slayer.h"
+#include "enemy_slayer.hpp"
 #include <cmath>
 
 EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, float speed, float size, Color color)
@@ -22,8 +22,12 @@ EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, float speed, float s
     }
 }
 
-void EnemySlayer::update(float deltaTime, const Player& player) {
-    Vector2 target = player.GetPosition();
+void EnemySlayer::SetTarget(Player* player) {
+    this->player = player;
+}
+
+void EnemySlayer::process(float deltaTime) {
+    Vector2 target = player->GetPosition();
     Vector2 direction = { target.x - position.x, target.y - position.y };
 
     float length = sqrtf(direction.x * direction.x + direction.y * direction.y);

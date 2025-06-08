@@ -1,6 +1,5 @@
 #pragma once
-#include "Player.hpp"
-#include "base.hpp"
+#include "player.hpp"
 class Player;
 
 class EnemySlayer : public EntityBase {
@@ -10,12 +9,14 @@ private:
     float size;
     Color color;
     bool dead;
+    Player* player;
 
 public:
     EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, Color color = RED);
 
-    void update(float deltaTime, const Player& player) override;
-    void draw() const override;
+    void SetTarget(Player* player);
+    void process(float deltaTime);
+    void draw() const;
     Vector2 GetPosition() const;
     float GetSize() const;
 
