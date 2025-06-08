@@ -1,3 +1,4 @@
+
 #pragma once
 #include "menu.hpp"
 #include <imgui.h>
@@ -7,7 +8,16 @@ constexpr unsigned int FLAGS = ImGuiWindowFlags_NoSavedSettings
 | ImGuiWindowFlags_NoResize;
 
 
-
+/**
+ * @class PlayerMenu
+ * @brief A basic implementation of a player statistics menu using ImGui.
+ *
+ * This class derives from MenuBase and provides a simple GUI for displaying and (in debug mode)
+ * modifying player attributes such as position, speed, health, size, critical chance, and critical multiplier.
+ * The menu is rendered using ImGui and is intended for debugging and development purposes.
+ *
+ * @note This is a basic implementation for now and may be extended with additional features in the future.
+ */
 class PlayerMenu : public MenuBase
 {
 public:
