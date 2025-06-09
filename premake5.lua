@@ -45,7 +45,7 @@ project "bounty_of_two"
         "include/**.h",
         "include/imgui/rlImGui.cpp" 
     }
-    includedirs { "include/imgui", "include/raylib" }
+    includedirs { "include/imgui", "include/raylib", "include" }
 
 
     links { "imgui" }
@@ -53,13 +53,13 @@ project "bounty_of_two"
     filter { "system:windows", "action:vs*" }
         includedirs { "include/raylib/msvc" }
         libdirs { "libs/msvc" }
-        links { "raylib.lib", "winmm.lib" }
+        links { "raylib.lib", "winmm.lib", "Ws2_32.lib" }
         defines { "_WINDOWS" }
 
     filter { "system:windows", "toolset:gcc" }
         includedirs { "include/raylib/mingw" }
         libdirs { "libs/mingw" }
-        links { "raylib", "winmm", "gdi32"  }
+        links { "raylib", "winmm", "gdi32", "ws2_32"  }
         defines { "_WINDOWS" }
 
     filter { "system:linux" }

@@ -8,6 +8,8 @@
 #include <memory>
 #include "imgui/fpscounter.hpp"
 #include "imgui/player_gui.hpp"
+#include "networking/test.hpp"
+
 
 void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
 {
@@ -18,8 +20,13 @@ void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
 	}
 }
 
-int main()
+
+int main(int argc, char** argv)
 {
+    if (argc > 1 && std::string(argv[1]) == "--ping") {
+        return ping();
+    }
+
 	raylib::Window window(0, 0, "bounty of two", FLAG_FULLSCREEN_MODE | FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_ALWAYS_RUN);
 
 	window.SetTargetFPS(0);
