@@ -13,15 +13,23 @@ constexpr unsigned int NOEDIT_FLAGS = ImGuiWindowFlags_NoCollapse
 
 class FPSCounter : public MenuBase
 {
+private:
 public:
+    void update(ImGui::Context& ctx) override
+    {
+        ASSERT_MISSING_IMGUI_CTX_LOCK(ctx);
+
+    }
+
     void render(ImGui::Context& ctx) const override
     {
         ASSERT_MISSING_IMGUI_CTX_LOCK(ctx);
         if (!ctx.getWindow()) return;
 
-		ImGui::SetNextWindowSize(ImVec2(100, 35), ImGuiCond_Once);
+		ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Once);
+        ImGui::SetNextWindowSize(ImVec2(100, 35), ImGuiCond_Once);
 		ImGui::Begin("FPS Counter", nullptr, NOEDIT_FLAGS);
-		ImGui::Text("FPS: %d", ctx.getWindow()->GetFPS());
+		ImGui::Text("FPS: %3d", ctx.getWindow()->GetFPS());
 		ImGui::End();
     }
 

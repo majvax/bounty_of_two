@@ -5,19 +5,65 @@
 #include "../imgui/menu.hpp"
 #include "../helper/assert.hpp"
 
-Scene::Scene() {}
+Scene::Scene(int width, int height) {
+    background = raylib::Texture2D("assets/background.jpg");
+    background.SetFilter(TEXTURE_FILTER_BILINEAR);
+
+    camera.SetOffset({width / 2.0f, height / 2.0f});
+    camera.SetZoom(1.0f);
+}
 
 void Scene::update(float deltaTime) {
+    // Updating each entity with the delta time
 	for (auto& entity : entities) {
         entity->update(deltaTime);
     }
+
+
+    // Updating the camera position based on the player position
+    if (auto player = get_player()) {
+        ASSERT_PTR(player, "Player must not be null");
+        auto position = player->GetCenter();
+        camera.target = { position.x, position.y };
+    }
 }
 
-void Scene::draw(ImGui::Context& ctx) const {
+void Scene::draw(ImGui::Context& ctx) {
     // drawing all the entities
+    camera.BeginMode();
+    
+    float camLeft = camera.target.x - camera.offset.x / camera.zoom;
+    float camTop = camera.target.y - camera.offset.y / camera.zoom;
+    // float camRight = camLeft + GetScreenWidth() / camera.zoom;
+    // float camBottom = camTop + GetScreenHeight() / camera.zoom;
+
+    int texW = background.width;
+    int texH = background.height;
+
+    // Calculate start positions with modulo for smooth repeating
+    int startX = (int)(camLeft) - ((int)(camLeft) % texW) - texW;
+    int startY = (int)(camTop) - ((int)(camTop) % texH) - texH;
+
+    // Calculate how many tiles needed to cover the screen plus margin
+    int tilesX = (GetScreenWidth() / texW) + 3;
+    int tilesY = (GetScreenHeight() / texH) + 3;
+
+    for (int y = 0; y < tilesY; y++) {
+        for (int x = 0; x < tilesX; x++) {
+            background.Draw(
+                startX + x * texW,
+                startY + y * texH,
+                WHITE
+            );
+        }
+    }
+
+
 	for (const auto& entity : entities) {
         entity->draw();
     }
+
+    camera.EndMode();
 
     // drawing all the menus
     while (ctx.lock()) {

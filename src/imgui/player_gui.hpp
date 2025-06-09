@@ -21,6 +21,12 @@ constexpr unsigned int FLAGS = ImGuiWindowFlags_NoSavedSettings
 class PlayerMenu : public MenuBase
 {
 public:
+    void update(ImGui::Context& ctx) override
+    {
+        ASSERT_MISSING_IMGUI_CTX_LOCK(ctx);
+        // No update logic needed for this menu
+    }
+
     void render(ImGui::Context& ctx) const override
     {
         ASSERT_MISSING_IMGUI_CTX_LOCK(ctx);

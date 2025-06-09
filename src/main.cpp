@@ -23,7 +23,7 @@ int main()
 
 	window.SetTargetFPS(120);
 
-	Scene scene = Scene();
+	Scene scene = Scene(window.GetWidth(), window.GetHeight());
 	scene.add_entity(std::make_unique<Player>(window.GetWidth()/2.0, window.GetHeight()/2.0));
 
 	auto slayer = std::make_unique<EnemySlayer>(window.GetWidth(),  window.GetHeight());
@@ -41,7 +41,7 @@ int main()
 
 	while (!window.ShouldClose())
 	{
-		draw(window, ctx, scene);
 		scene.update(window.GetFrameTime());
+		draw(window, ctx, scene);
 	}
 }
