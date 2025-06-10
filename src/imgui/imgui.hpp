@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 
-#include "../helper/observer_ptr.hpp"
+#include "../utils/observer_ptr.hpp"
 #include "../entity/player.hpp"
 #include "../scene/scene.hpp"
 

@@ -3,7 +3,7 @@
 #include <algorithm>
 #include "../imgui/imgui.hpp"
 #include "../imgui/menu.hpp"
-#include "../helper/assert.hpp"
+#include "../utils/assert.hpp"
 
 Scene::Scene(int width, int height) {
     background = raylib::Texture2D("assets/background.jpg");
