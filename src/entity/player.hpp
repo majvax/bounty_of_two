@@ -1,6 +1,7 @@
 #pragma once
 #include "base.hpp"
 #include "raylib.h"
+#include "../utils/getter_setter.hpp"
 
 class Player : public EntityBase {
 private:
@@ -11,6 +12,7 @@ private:
     int health;
     float crit_chance;
     float crit_multiplier;
+
 public:
     Player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
 
@@ -18,20 +20,17 @@ public:
     void draw() const override;
     Vector2 GetPosition() const;
     Vector2 GetCenter() const;
-    float GetSize() const;
 
     void TakeDamage(int amount);
     bool IsDead() const;
-    int GetHealth() const;
-    float GetSpeed() const;
-    float GetCritChance() const;
-    float GetCritMultiplier() const;
 
-    void SetSpeed(float new_speed);
-    void SetHealth(int new_health);
-    void SetSize(float new_size);
-    void SetCritChance(float new_chance);
-    void SetCritMultiplier(float new_multiplier);
+
+    GETTER_SETTER(float, Speed, speed)
+    GETTER_SETTER(int, Health, health)
+    GETTER_SETTER(float, Size, size)
+    GETTER_SETTER(float, CritChance, crit_chance)
+    GETTER_SETTER(float, CritMultiplier, crit_multiplier)
+
 
     void Reset(float x, float y);
 };

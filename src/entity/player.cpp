@@ -13,8 +13,13 @@ void Player::update(float deltaTime) {
 }
 
 void Player::draw() const {
-    DrawRectangle(static_cast<int>(position.x), static_cast<int>(position.y),
-        static_cast<int>(size), static_cast<int>(size), color);
+    DrawRectangle(
+        static_cast<int>(position.x),
+        static_cast<int>(position.y),
+        static_cast<int>(size),
+        static_cast<int>(size),
+        color
+    );
 }
 
 Vector2 Player::GetPosition() const {
@@ -25,10 +30,6 @@ Vector2 Player::GetCenter() const {
     return { position.x + size / 2.0f, position.y + size / 2.0f };
 }
 
-float Player::GetSize() const {
-    return size;
-}
-
 void Player::TakeDamage(int amount) {
     health -= amount;
 }
@@ -36,42 +37,6 @@ void Player::TakeDamage(int amount) {
 bool Player::IsDead() const {
     return health <= 0;
 }
-
-int Player::GetHealth() const {
-    return health;
-}
-float Player::GetSpeed() const {
-    return speed;
-}
-
-float Player::GetCritChance() const {
-    return crit_chance;
-}
-
-float Player::GetCritMultiplier() const {
-    return crit_multiplier;
-}
-
-void Player::SetSpeed(float new_speed) {
-    speed = new_speed;
-}
-
-void Player::SetHealth(int new_health) {
-    health = new_health;
-}
-
-void Player::SetSize(float new_size) {
-    size = new_size;
-}
-
-void Player::SetCritChance(float new_chance) {
-    crit_chance = new_chance;
-}
-
-void Player::SetCritMultiplier(float new_multiplier) {
-    crit_multiplier = new_multiplier;
-}
-
 
 void Player::Reset(float x, float y) {
     position = { x, y };

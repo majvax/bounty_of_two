@@ -2,7 +2,7 @@
 #pragma once
 #include "menu.hpp"
 #include <imgui.h>
-#include "../helper/assert.hpp"
+#include "../utils/assert.hpp"
 
 constexpr unsigned int FLAGS = ImGuiWindowFlags_NoSavedSettings
 | ImGuiWindowFlags_NoResize;
