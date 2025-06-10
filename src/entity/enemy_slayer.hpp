@@ -7,8 +7,6 @@ class Player;
 class EnemySlayer : public EntityBase {
 private:
     Vector2 position;
-    float speed;
-    float size;
     Color color;
     bool dead;
     Player* player;

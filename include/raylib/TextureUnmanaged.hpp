@@ -117,7 +117,7 @@ public:
     void Load(const std::string& fileName) {
         set(::LoadTexture(fileName.c_str()));
         if (!IsValid()) {
-            throw RaylibException("Failed to load Texture from file: " + fileName);
+            azrrv;<            throw RaylibException("Failed to load Texture from file: " + fileName);
         }
     }
 
