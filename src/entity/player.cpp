@@ -1,23 +1,22 @@
 #include "player.hpp"
 
-Player::Player(float x, float y, float speed, float size, Color color)
-    : position{ x, y }, speed(speed), size(size), color(color), health(5), 
-      crit_chance(0.1f), crit_multiplier(2.0f) {
+Player::Player(float x, float y, Color color)
+    : position({ x, y }), color(color) {
 }
 
 void Player::update(float deltaTime) {
-    if (IsKeyDown(KEY_RIGHT)) position.x += speed * deltaTime;
-    if (IsKeyDown(KEY_LEFT))  position.x -= speed * deltaTime;
-    if (IsKeyDown(KEY_UP))    position.y -= speed * deltaTime;
-    if (IsKeyDown(KEY_DOWN))  position.y += speed * deltaTime;
+    if (IsKeyDown(KEY_RIGHT)) position.x += stats.GetSpeed() * deltaTime;
+    if (IsKeyDown(KEY_LEFT))  position.x -= stats.GetSpeed() * deltaTime;
+    if (IsKeyDown(KEY_UP))    position.y -= stats.GetSpeed() * deltaTime;
+    if (IsKeyDown(KEY_DOWN))  position.y += stats.GetSpeed() * deltaTime;
 }
 
 void Player::draw() const {
     DrawRectangle(
         static_cast<int>(position.x),
         static_cast<int>(position.y),
-        static_cast<int>(size),
-        static_cast<int>(size),
+        static_cast<int>(stats.GetSize()),
+        static_cast<int>(stats.GetSize()),
         color
     );
 }
@@ -27,18 +26,18 @@ Vector2 Player::GetPosition() const {
 }
 
 Vector2 Player::GetCenter() const {
-    return { position.x + size / 2.0f, position.y + size / 2.0f };
+    return { position.x + stats.GetSize() / 2.0f, position.y + stats.GetSize() / 2.0f };
 }
 
-void Player::TakeDamage(int amount) {
-    health -= amount;
+void Player::TakeDamage() {
+    stats.SetLife(stats.GetLife() - 1) ;
 }
 
 bool Player::IsDead() const {
-    return health <= 0;
+    return stats.GetLife() <= 0;
 }
 
 void Player::Reset(float x, float y) {
     position = { x, y };
-    health = 5;
+    stats.SetLife(5) ;
 }

@@ -17,6 +17,9 @@ private:
     float size;
 
 public:
+    PlayerStats (int life = 3, int damage = 30, float attack_speed = 1.0f, float speed = 250.0f, float crit_chance = 5.0f, float crit_multiplier = 100.0f, float loadingTime = 100.0f, int dash = 1, int pierce = 0, float sizeof_area = 100.0f, float size = 40.0f )
+        : life(life), damage(damage), attack_speed(attack_speed), speed(speed), crit_chance(crit_chance), crit_multiplier(crit_multiplier), loadingTime(loadingTime), dash(dash), pierce(pierce), sizeof_area(sizeof_area), size(size)
+            {}
     GETTER_SETTER(int, Life, life)
     GETTER_SETTER(int, Damage, damage)
     GETTER_SETTER(int, AtqSpeed, attack_speed)

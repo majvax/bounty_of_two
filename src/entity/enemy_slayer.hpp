@@ -11,10 +11,10 @@ private:
     Color color;
     bool dead;
     Player* player;
-    EnemyStats enemystats;
+    EnemyStats stats;
 
 public:
-    EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, raylib::Color color = raylib::Color::Red());
+    EnemySlayer(int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
 
     void SetTarget(Player* player);
     void update(float deltaTime) override;
@@ -24,5 +24,5 @@ public:
 
     void MarkAsDead();
     bool IsDead() const;
-    EnemyStats& getStats() { return enemystats; }
+    EnemyStats& getStats() { return stats; }
 };
