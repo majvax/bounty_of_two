@@ -1,6 +1,7 @@
 #pragma once
 #include <raylib-cpp.hpp>
 #include "base.hpp"
+#include "enemy_stats.hpp"
 
 class Player;
 
@@ -10,6 +11,7 @@ private:
     Color color;
     bool dead;
     Player* player;
+    EnemyStats enemystats;
 
 public:
     EnemySlayer(int screenWidth, int screenHeight, float speed = 100.0f, float size = 30.0f, raylib::Color color = raylib::Color::Red());
@@ -22,4 +24,5 @@ public:
 
     void MarkAsDead();
     bool IsDead() const;
+    EnemyStats& getStats() { return enemystats; }
 };
