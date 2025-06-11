@@ -22,7 +22,7 @@ public:
             {}
     GETTER_SETTER(int, Life, life)
     GETTER_SETTER(int, Damage, damage)
-    GETTER_SETTER(int, AtqSpeed, attack_speed)
+    GETTER_SETTER(float, AtqSpeed, attack_speed)
     GETTER_SETTER(float, Speed, speed)
     GETTER_SETTER(float, CritChance, crit_chance)
     GETTER_SETTER(float, CritMultiplier, crit_multiplier)
