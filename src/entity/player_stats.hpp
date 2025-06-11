@@ -19,14 +19,14 @@ private:
 public:
     GETTER_SETTER(int, Life, life)
     GETTER_SETTER(int, Damage, damage)
-    GETTER_SETTER(int, Attack_speed, attack_speed)
+    GETTER_SETTER(int, AtqSpeed, attack_speed)
     GETTER_SETTER(float, Speed, speed)
     GETTER_SETTER(float, CritChance, crit_chance)
     GETTER_SETTER(float, CritMultiplier, crit_multiplier)
     GETTER_SETTER(float, LoadingTime, loadingTime)
     GETTER_SETTER(int, Dash, dash)
     GETTER_SETTER(int, Pierce, pierce)
-    GETTER_SETTER(float, Sizeof_area, sizeof_area)
+    GETTER_SETTER(float, SizeofArea, sizeof_area)
     GETTER_SETTER(float, Size, size)
 
 };

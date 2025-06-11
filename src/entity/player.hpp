@@ -2,11 +2,13 @@
 #include "base.hpp"
 #include "raylib.h"
 #include "../utils/getter_setter.hpp"
+#include "player_stats.hpp"
 
 class Player : public EntityBase {
 private:
     Vector2 position;
     Color color;
+    PlayerStats stats;
 
 public:
     Player(float x, float y, float speed = 200.0f, float size = 40.0f, Color color = BLUE);
@@ -25,6 +27,8 @@ public:
     GETTER_SETTER(float, Size, size)
     GETTER_SETTER(float, CritChance, crit_chance)
     GETTER_SETTER(float, CritMultiplier, crit_multiplier)
+
+    PlayerStats& getStats() { return stats; }
 
 
     void Reset(float x, float y);
