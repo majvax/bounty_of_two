@@ -38,62 +38,62 @@ public:
         ImGui::Text("Position: (%.2f, %.2f)", player->GetPosition().x, player->GetPosition().y);
         
         ImGui::PushID(10);
-        ImGui::Text("Speed: %.2f", player->GetSpeed());
+        ImGui::Text("Speed: %.2f", player->GetStats().GetSpeed());
         #ifdef DEBUG
         ImGui::SameLine();
         if (ImGui::Button("-1##"))
-            player->SetSpeed(player->GetSpeed() - 1.0f);
+            player->GetStats().SetSpeed(player->GetStats().GetSpeed() - 1.0f);
         ImGui::SameLine();
         if (ImGui::Button("+1##"))
-            player->SetSpeed(player->GetSpeed() + 1.0f);
+            player->GetStats().SetSpeed(player->GetStats().GetSpeed() + 1.0f);
         #endif
         ImGui::PopID();
 
         ImGui::PushID(20);
-        ImGui::Text("Health: %d", player->GetHealth());
+        ImGui::Text("Health: %d", player->GetStats().GetLife());
         #ifdef DEBUG
         ImGui::SameLine();
         if (ImGui::Button("-1##"))
-            player->TakeDamage(1);
+            player->TakeDamage();
         ImGui::SameLine();
         if (ImGui::Button("+1##"))
-            player->SetHealth(player->GetHealth() + 1);
+            player->GetStats().SetLife(player->GetStats().GetLife() + 1);
         #endif
         ImGui::PopID();
 
         ImGui::PushID(30);
-        ImGui::Text("Size: %.2f", player->GetSize());
+        ImGui::Text("Size: %.2f", player->GetStats().GetSize());
         #ifdef DEBUG
         ImGui::SameLine();
         if (ImGui::Button("-1##"))
-            player->SetSize(player->GetSize() - 1.0f);
+            player->GetStats().SetSize(player->GetStats().GetSize() - 1.0f);
         ImGui::SameLine();
         if (ImGui::Button("+1##"))
-            player->SetSize(player->GetSize() + 1.0f);
+            player->GetStats().SetSize(player->GetStats().GetSize() + 1.0f);
         #endif
         ImGui::PopID();
 
         ImGui::PushID(40);
-        ImGui::Text("Crit Chance: %.2f%%", player->GetCritChance() * 100.0f);
+        ImGui::Text("Crit Chance: %.2f%%", player->GetStats().GetCritChance());
         #ifdef DEBUG
         ImGui::SameLine();
         if (ImGui::Button("-1"))
-            player->SetCritChance(player->GetCritChance() - 0.01f);
+            player->GetStats().SetCritChance(player->GetStats().GetCritChance() - 0.01f);
         ImGui::SameLine();
         if (ImGui::Button("+1"))
-            player->SetCritChance(player->GetCritChance() + 0.01f);
+            player->GetStats().SetCritChance(player->GetStats().GetCritChance() + 0.01f);
         #endif
         ImGui::PopID();
 
         ImGui::PushID(50);
-        ImGui::Text("Crit Multiplier: %.2f", player->GetCritMultiplier());
+        ImGui::Text("Crit Multiplier: %.2f", player->GetStats().GetCritMultiplier());
         #ifdef DEBUG
         ImGui::SameLine();
         if (ImGui::Button("-0.1"))
-            player->SetCritMultiplier(player->GetCritMultiplier() - 0.1f);
+            player->GetStats().SetCritMultiplier(player->GetStats().GetCritMultiplier() - 0.1f);
         ImGui::SameLine();
         if (ImGui::Button("+0.1"))
-            player->SetCritMultiplier(player->GetCritMultiplier() + 0.1f);
+            player->GetStats().SetCritMultiplier(player->GetStats().GetCritMultiplier() + 0.1f);
         #endif
         ImGui::PopID();
 
