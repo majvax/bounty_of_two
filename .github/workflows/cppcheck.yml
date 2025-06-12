@@ -20,8 +20,11 @@ jobs:
       - name: Run cppcheck
         run: |
           cppcheck --enable=all --inconclusive --std=c++23 --force --inline-suppr \
-            --suppress=missingIncludeSystem --suppress=unusedFunction --quiet \
-            --check-level=exhaustive ./src/ 2> cppcheck_report.txt
+            --suppress=missingIncludeSystem --suppress=unusedFunction --suppress=checkersReport \
+            --quiet --check-level=exhaustive ./src/ 2> cppcheck_report.txt
+          if [ ! -s cppcheck_report.txt ]; then
+            echo "✅ No error reported" > cppcheck_report.txt
+          fi
           cat cppcheck_report.txt
 
 
