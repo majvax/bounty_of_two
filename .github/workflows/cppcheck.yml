@@ -2,6 +2,11 @@ name: cppcheck-action
 
 on: [pull_request]
 
+
+permissions:
+  pull-requests: write
+  contents: read
+
 jobs:
   cppcheck:
     runs-on: ubuntu-latest
@@ -11,6 +16,7 @@ jobs:
       - name: Install cppcheck
         run: sudo apt-get update && sudo apt-get install -y cppcheck
 
+
       - name: Run cppcheck
         run: |
           cppcheck --enable=all --inconclusive --std=c++23 --force --inline-suppr \
@@ -18,11 +24,12 @@ jobs:
             --check-level=exhaustive ./src/ 2> cppcheck_report.txt
           cat cppcheck_report.txt
 
+
       - name: PR comment with file
         uses: thollander/actions-comment-pull-request@v3
         with:
           file-path: cppcheck_report.txt
-          
+
       - name: publish report    
         uses: actions/upload-artifact@v4.6.2
         with:
