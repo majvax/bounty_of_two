@@ -3,7 +3,7 @@
 #include <cmath>
 
 EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, raylib::Color color)
-    : color(color), dead(false)
+    : color(color), dead(false), player(nullptr)
 {
     int side = GetRandomValue(0, 3);
 

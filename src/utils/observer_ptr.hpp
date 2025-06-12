@@ -19,7 +19,7 @@ private:
 
 public:
     constexpr observer_ptr() noexcept : ptr_(nullptr) {}
-    constexpr observer_ptr(std::nullptr_t) noexcept : ptr_(nullptr) {}
+    constexpr explicit observer_ptr(std::nullptr_t) noexcept : ptr_(nullptr) {}
     constexpr explicit observer_ptr(T* ptr) noexcept : ptr_(ptr) {}
 
     constexpr observer_ptr& operator=(T* ptr) noexcept {

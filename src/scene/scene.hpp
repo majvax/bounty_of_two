@@ -1,29 +1,22 @@
 #pragma once
+#include "../imgui/imgui.hpp"
+#include "../utils/getter_setter.hpp"
+#include "game_state.hpp"
+#include "renderer.hpp"
 
-#include <raylib-cpp.hpp>
-#include "../entity/base.hpp"
-#include "../entity/player.hpp"
-#include <vector>
-#include <memory>
 
-class MenuBase;
-namespace ImGui { class Context; }
-class Scene {
-private:
-    raylib::Texture2D background;
-    raylib::Camera2D camera;
-	std::vector<std::unique_ptr<EntityBase>> entities;
-    std::vector<std::unique_ptr<MenuBase>> menus;
+
+
+class Scene
+{
+    Renderer renderer;
+    GameState game_state;
 public:
-	Scene(int width, int height);
-    void add_entity(std::unique_ptr<EntityBase> entity);
-	void remove_entity(EntityBase* entity);
+    void update(float deltatime, ImGui::Context& ctx);
+    void draw(ImGui::Context& ctx);
+    Scene(int width, int height) : renderer(width, height) {}
 
-    void add_menu(std::unique_ptr<MenuBase> menu);
-    void remove_menu(MenuBase* menu);
 
-	void update(float deltaTime);
-	void draw(ImGui::Context& ctx);
-
-    Player* get_player() const;
+    Renderer& GetRenderer() { return renderer; }
+    GameState& GetGameState() { return game_state; }
 };

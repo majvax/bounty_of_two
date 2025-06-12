@@ -1,6 +1,6 @@
 #pragma once
+#include <raylib.h>
 #include "base.hpp"
-#include "raylib.h"
 #include "../utils/getter_setter.hpp"
 #include "player_stats.hpp"
 
