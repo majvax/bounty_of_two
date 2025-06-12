@@ -1,6 +1,6 @@
 name: cppcheck-action
 
-on: [push]
+on: [pull_request]
 
 jobs:
   cppcheck:
@@ -8,13 +8,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: cppcheck
-        uses: deep5050/cppcheck-action@v3.0
-        with:
-          std:  c++20
-          exclude_check: ./include/
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
 
+      - name: Run cppcheck
+        run: |
+          cppcheck --enable=all --inconclusive --std=c++23 --force --inline-suppr \
+            --suppress=missingIncludeSystem --suppress=unusedFunction --quiet \
+            --check-level=exhaustive ./src/ 2> cppcheck_report.txt
+          cat cppcheck_report.txt
+
+      - name: PR comment with file
+        uses: thollander/actions-comment-pull-request@v3
+        with:
+          file-path: cppcheck_report.txt
+          
       - name: publish report    
         uses: actions/upload-artifact@v4.6.2
         with:
