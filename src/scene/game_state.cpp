@@ -2,6 +2,7 @@
 
 #include "../entity/base.hpp"
 #include "../entity/player.hpp"
+#include <algorithm>
 
 
 void GameState::update(float deltatime)
