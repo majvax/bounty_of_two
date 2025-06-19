@@ -16,6 +16,7 @@ nav ul li{
     float: left;
     width: 25%;
     text-align: center;
+    position: relative;
 }
 
 nav ul::after{
@@ -36,3 +37,4 @@ nav a:hover{
     color: grey;
     border-bottom: 2px solid black;
 }
+
