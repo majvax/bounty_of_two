@@ -1,7 +1,9 @@
 /* Reset CSS*/
 h1 {
-    position: center;
+    left: auto;
+    margin: 25% 25% 33% 33%;
     text-align: center;
+    width: 34%;
 }
 
 body {
@@ -14,16 +16,22 @@ nav {
     width: 100%;
     background-color: rgb(207, 207, 207);
     position: sticky;
-    top: 0px;
+    top: 0;
+    bottom: 0;
 }
 
 nav ul{
     list-style-type: none;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    background-color: rgb(207, 207, 207);
+    padding-right: 2em;
+    padding-top: 10px;
 } 
 
 nav ul li{
-    float: left;
-    width: 33%;
     text-align: center;
     position: relative;
 }
