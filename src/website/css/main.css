@@ -23,7 +23,7 @@ nav ul{
 
 nav ul li{
     float: left;
-    width: 30%;
+    width: 33%;
     text-align: center;
     position: relative;
 }
@@ -39,7 +39,7 @@ nav a{
     text-decoration: none;
     color: black;
     border-bottom: 1px solid transparent;
-    padding: 0px 0px;
+    padding: 10px 0px;
 }
 
 nav a:hover{
