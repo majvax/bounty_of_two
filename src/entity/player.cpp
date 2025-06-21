@@ -1,14 +1,56 @@
 #include "player.hpp"
+#include <raylib-cpp.hpp>
+#include <raylib.h>
+#include <raymath.h>
+#include <string>
 
 Player::Player(float x, float y, Color color)
-    : position({ x, y }), color(color) {
+    : position({ x, y }), color(color), current_sprite(0),
+    direction(DOWN), frame_timer(0), flip_h(false) {
+    for (size_t i = 0; i < 7; i++) {
+        Texture2D image = LoadTexture(("assets/crocoimages/image000" + std::to_string(i) + ".png").c_str());
+        sprites.push_back(image);
+    }
 }
 
 void Player::update(float deltaTime) {
-    if (IsKeyDown(KEY_RIGHT)) position.x += stats.GetSpeed() * deltaTime;
-    if (IsKeyDown(KEY_LEFT))  position.x -= stats.GetSpeed() * deltaTime;
-    if (IsKeyDown(KEY_UP))    position.y -= stats.GetSpeed() * deltaTime;
-    if (IsKeyDown(KEY_DOWN))  position.y += stats.GetSpeed() * deltaTime;
+    Vector2 target_velocity = Vector2();
+    if (IsKeyDown(KEY_RIGHT)) {
+        target_velocity.x += 1;
+        direction = RIGHT;
+    }
+    if (IsKeyDown(KEY_LEFT))  {
+        target_velocity.x -= 1;
+        direction = LEFT;
+    }
+    if (IsKeyDown(KEY_UP)) {
+        target_velocity.y -= 1;
+        direction = UP;
+    }
+    if (IsKeyDown(KEY_DOWN)) {
+        target_velocity.y += 1;
+        direction = DOWN;
+    }
+    target_velocity = Vector2Multiply(Vector2Normalize(target_velocity), Vector2({stats.GetSpeed(), stats.GetSpeed()}));
+    // Normalizing movement prevents an unintentional speed boost from going diagonally
+    velocity = Vector2MoveTowards(velocity, target_velocity, deltaTime*stats.GetAcceleration());
+    position.x += velocity.x*deltaTime;
+    position.y += velocity.y*deltaTime;
+
+    // update sprite
+    if (Vector2LengthSqr(velocity) > 1 && (direction == LEFT or direction == RIGHT)){
+        if (current_sprite < 4 || current_sprite > 6) current_sprite = 6;
+        if (frame_timer <= 0){
+            frame_timer = 0.1;
+            current_sprite -= 1;
+            if (current_sprite == 3) current_sprite = 6;
+        }
+        frame_timer -= deltaTime;
+        flip_h = (direction == LEFT);
+    }else{
+        current_sprite = (int)direction;
+        flip_h = false;
+    }
 }
 
 void Player::draw() const {
@@ -18,6 +60,20 @@ void Player::draw() const {
         static_cast<int>(stats.GetSize()),
         static_cast<int>(stats.GetSize()),
         color
+    );
+    Rectangle rect = Rectangle({
+        1.0, 1.0, 
+        static_cast<float>(sprites[current_sprite].width),
+        static_cast<float>(sprites[current_sprite].height)
+    });
+    rect.width *= flip_h ? -1.0 : 1.0;
+    DrawTextureRec( // draw the current sprite centered on the center position
+        sprites[current_sprite],
+        rect,
+        Vector2Subtract(GetCenter(), Vector2({
+            static_cast<float>(sprites[current_sprite].width/2.0),
+            static_cast<float>(sprites[current_sprite].height/2.0)
+        })), WHITE
     );
 }
 
