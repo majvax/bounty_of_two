@@ -1,14 +1,20 @@
 /* Reset CSS*/
 h1 {
-    left: auto;
-    margin: 25% 25% 33% 33%;
     text-align: center;
-    width: 34%;
+    width: 100%;
+}
+
+header {
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    background: whitesmoke;
+    display: flex;
 }
 
 body {
-    background-color: whitesmoke;
-    background-image: url("../arriereplan.jpeg");
+    background-image: url("../ChatGPT Image 21 juin 2025, 18_06_10.png");
 }
 
 .menu {
@@ -37,16 +43,17 @@ svg {
     position: fixed;
     top: 20px;
     left: 30px;
-    height: 32px;
-    width: 32px;
+    height: 50px;
+    width: 50px;
 }
 
 .menu-checkbox{
+    position: fixed;
     appearance: none;
     top: 20px;
     left: 30px;
-    height: 32px;
-    width: 32px;
+    height: 50px;
+    width: 50px;
     z-index: 10;
 }
 nav ul{
