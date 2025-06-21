@@ -11,22 +11,22 @@ header {
     width: 100%;
     background: whitesmoke;
     display: flex;
+    padding: 0;
 }
 
 body {
+    margin: 0%;
     background-image: url("../ChatGPT Image 21 juin 2025, 18_06_10.png");
 }
 
 .menu {
     height: 100%;
     padding: 0%;
-    width: 100%;
+    max-width: 400px;
     background-color: rgb(207, 207, 207);
     position: fixed;
-    top: 0;
     bottom: 0;
     display: none;
-    z-index: 1;
     
 }
 
@@ -41,7 +41,7 @@ rect {
 svg {
     color: black;
     position: fixed;
-    top: 20px;
+    top: 15px;
     left: 30px;
     height: 50px;
     width: 50px;
@@ -55,12 +55,15 @@ svg {
     height: 50px;
     width: 50px;
     z-index: 10;
+    cursor: pointer;
 }
 nav ul{
     list-style-type: none;
+    margin-top: 100px;
+    height: 100%;
+    max-width: 400px;
     position: fixed;
     left: 0;
-    top: 0;
     bottom: 0;
     background-color: rgb(207, 207, 207);
     padding-right: 2em;
