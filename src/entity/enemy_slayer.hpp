@@ -7,6 +7,7 @@ class Player;
 
 class EnemySlayer : public EntityBase {
 private:
+    GameState* game_state;
     Vector2 position;
     Color color;
     bool dead;
@@ -14,7 +15,7 @@ private:
     EnemyStats stats;
 
 public:
-    EnemySlayer(int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
+    EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
 
     void SetTarget(Player* player);
     void update(float deltaTime) override;

@@ -14,6 +14,7 @@ enum Direction {
 
 class Player : public EntityBase {
 private:
+    GameState* game_state;
     Vector2 position;
     Vector2 velocity;
     Color color;
@@ -24,9 +25,10 @@ private:
     float frame_timer;
     bool flip_h;
     std::vector<PlayerBullet*> bullets;
+    float invincibility_timer;
 
 public:
-    Player(float x, float y, Color color = BLUE);
+    Player(GameState* game_state, float x, float y, Color color = BLUE);
 
     void update(float deltaTime) override;
     void draw() const override;
@@ -35,6 +37,8 @@ public:
 
     void TakeDamage();
     bool IsDead() const;
+
+    void Fling(Vector2 direction);
 
     PlayerStats& GetStats() { return stats; }
     void ShootBullet(Vector2 direction);

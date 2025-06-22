@@ -12,8 +12,8 @@ class Scene
     Renderer renderer;
     GameState game_state;
 public:
-    void update(float deltatime, ImGui::Context& ctx);
-    void draw(ImGui::Context& ctx);
+    virtual void update(float deltatime, ImGui::Context& ctx);
+    virtual void draw(ImGui::Context& ctx);
     Scene(int width, int height) : renderer(width, height) {}
 
 

@@ -1,13 +1,14 @@
 #include "player.hpp"
+#include "../scene/game_state.hpp"
 #include <raylib-cpp.hpp>
 #include <raylib.h>
 #include <raymath.h>
 #include <string>
 #include <algorithm>
 
-Player::Player(float x, float y, Color color)
-    : position({ x, y }), color(color), current_sprite(0),
-    direction(DOWN), frame_timer(0), flip_h(false) {
+Player::Player(GameState* game_state, float x, float y, Color color)
+    : game_state(game_state), position({ x, y }), color(color), current_sprite(0),
+    invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false) {
     for (size_t i = 0; i < 7; i++) {
         Texture2D image = LoadTexture(("assets/crocoimages/image000" + std::to_string(i) + ".png").c_str());
         sprites.push_back(image);
@@ -15,6 +16,7 @@ Player::Player(float x, float y, Color color)
 }
 
 void Player::update(float deltaTime) {
+    invincibility_timer -= deltaTime;
     Vector2 target_velocity = Vector2();
     if (IsKeyDown(KEY_RIGHT)) {
         target_velocity.x += 1;
@@ -65,7 +67,7 @@ void Player::update(float deltaTime) {
     // Bullet management
     for (auto* bullet : bullets) {
         bullet->update(deltaTime);
-        if (Vector2Distance(GetPosition(), bullet->GetPosition())> 2048){
+        if (Vector2Distance(GetPosition(), bullet->GetPosition())> 2048 || bullet->GetDespawn()){
             RemoveBullet(bullet);
             delete (bullet);
             // FIXME: this may crash if you have to delete multiple bullets in a single frame
@@ -126,7 +128,14 @@ Vector2 Player::GetCenter() const {
 }
 
 void Player::TakeDamage() {
+    if (invincibility_timer > 0.0) return;
+    invincibility_timer = 1.0;
     stats.SetLife(stats.GetLife() - 1) ;
+}
+
+void Player::Fling(Vector2 direction){
+    velocity.x += direction.x;
+    velocity.y += direction.y;
 }
 
 bool Player::IsDead() const {
@@ -142,6 +151,7 @@ void Player::ShootBullet(Vector2 direction){
     Rectangle bullet_hitbox{0,0,64,64};
     Vector2 velocity = Vector2Multiply(Vector2Normalize(direction), {300,300});
     PlayerBullet* bullet = new PlayerBullet(
+        game_state,
         GetCenter().x, GetCenter().y,
         velocity.x, velocity.y,
         16, stats.GetDamage()
