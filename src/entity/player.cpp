@@ -3,6 +3,7 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <string>
+#include <algorithm>
 
 Player::Player(float x, float y, Color color)
     : position({ x, y }), color(color), current_sprite(0),
@@ -51,16 +52,36 @@ void Player::update(float deltaTime) {
         current_sprite = (int)direction;
         flip_h = false;
     }
+    // Shoot bullets
+    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+        Vector2 relative_mouse_position = Vector2({
+            static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
+            static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
+        });
+        Vector2 look_direction = Vector2Normalize(relative_mouse_position);
+        ShootBullet(look_direction);
+    }
+
+    // Bullet management
+    for (auto* bullet : bullets) {
+        bullet->update(deltaTime);
+        if (Vector2Distance(GetPosition(), bullet->GetPosition())> 2048){
+            RemoveBullet(bullet);
+            delete (bullet);
+            // FIXME: this may crash if you have to delete multiple bullets in a single frame
+            // but also i don't see deleting multiple bullets in a frame possible unless using TAS tools
+        }
+    }
 }
 
 void Player::draw() const {
-    DrawRectangle(
-        static_cast<int>(position.x),
-        static_cast<int>(position.y),
-        static_cast<int>(stats.GetSize()),
-        static_cast<int>(stats.GetSize()),
-        color
-    );
+    // DrawRectangle(
+    //     static_cast<int>(position.x),
+    //     static_cast<int>(position.y),
+    //     static_cast<int>(stats.GetSize()),
+    //     static_cast<int>(stats.GetSize()),
+    //     color
+    // );
     Rectangle rect = Rectangle({
         1.0, 1.0, 
         static_cast<float>(sprites[current_sprite].width),
@@ -75,6 +96,25 @@ void Player::draw() const {
             static_cast<float>(sprites[current_sprite].height/2.0)
         })), WHITE
     );
+
+    Vector2 relative_mouse_position = Vector2({
+        static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
+        static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
+    });
+
+    Vector2 look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+    // Draw aim
+    DrawRectangle(
+        look_direction.x+GetCenter().x-16,
+        look_direction.y+GetCenter().y-16,
+        32,
+        32,
+        WHITE
+    );
+
+    for (auto* bullet : bullets) {
+        bullet->draw();
+    }
 }
 
 Vector2 Player::GetPosition() const {
@@ -96,4 +136,23 @@ bool Player::IsDead() const {
 void Player::Reset(float x, float y) {
     position = { x, y };
     stats.SetLife(5) ;
+}
+
+void Player::ShootBullet(Vector2 direction){
+    Rectangle bullet_hitbox{0,0,64,64};
+    Vector2 velocity = Vector2Multiply(Vector2Normalize(direction), {300,300});
+    PlayerBullet* bullet = new PlayerBullet(
+        GetCenter().x, GetCenter().y,
+        velocity.x, velocity.y,
+        16, stats.GetDamage()
+    );
+    bullets.push_back(bullet);
+}
+
+
+void Player::RemoveBullet(PlayerBullet* bullet)
+{
+    auto it = std::remove_if(bullets.begin(), bullets.end(),
+        [bullet](const PlayerBullet* e) { return e == bullet; });
+    bullets.erase(it, bullets.end());
 }

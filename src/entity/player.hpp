@@ -2,8 +2,8 @@
 #include <raylib.h>
 #include <vector>
 #include "base.hpp"
-#include "../utils/getter_setter.hpp"
 #include "player_stats.hpp"
+#include "player_bullet.hpp"
 
 enum Direction {
     DOWN,
@@ -23,6 +23,7 @@ private:
     Direction direction;
     float frame_timer;
     bool flip_h;
+    std::vector<PlayerBullet*> bullets;
 
 public:
     Player(float x, float y, Color color = BLUE);
@@ -36,7 +37,8 @@ public:
     bool IsDead() const;
 
     PlayerStats& GetStats() { return stats; }
-
+    void ShootBullet(Vector2 direction);
+    void RemoveBullet(PlayerBullet* bullet);
 
     void Reset(float x, float y);
 };
