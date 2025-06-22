@@ -5,6 +5,7 @@ h1 {
 }
 
 header {
+    position: fixed;
     top: 0;
     left: 0;
     right: 0;
@@ -93,4 +94,17 @@ nav a{
 nav a:hover{
     color: blue;
     border: 1px solid black;
+}
+
+.Wiki-main{
+    position: fixed;
+    top: 65px;
+    height: 20%;
+}
+
+.image1{
+    position: fixed;
+    top: 90px;
+    height: 80px;
+    width: 50px;
 }
