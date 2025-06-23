@@ -6,13 +6,14 @@
 #include <string>
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
 Player::Player(GameState* game_state, float x, float y, Color color)
-    : game_state(game_state), position({ x, y }), velocity({0,0}), color(color), stats(), sprites(), current_sprite(0),
+    : game_state(game_state), position({ x, y }), velocity({0,0}), color(color), stats(), sprites(), current_animation_frame(0),
     invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false), shoot_timer(0.5),
     aim_sprite(LoadTexture("assets/direction.png")), bullets() {
-    for (size_t i = 0; i < 7; i++) {
-        Texture2D image = LoadTexture(("assets/crocoimages/image000" + std::to_string(i) + ".png").c_str());
+    for (size_t i = 0; i < 11; i++) {
+        Texture2D image = LoadTexture(("assets/crocoimages/image" + std::to_string(i) + ".png").c_str());
         sprites.push_back(image);
     }
 }
@@ -46,19 +47,24 @@ void Player::update(float deltaTime) {
     position.y += velocity.y*deltaTime;
 
     // update sprite
-    if (Vector2LengthSqr(velocity) > 1 && (direction == LEFT or direction == RIGHT)){
-        if (current_sprite < 4 || current_sprite > 6) current_sprite = 6;
+    if (Vector2LengthSqr(velocity) > 1){
+        frame_timer -= deltaTime;
         if (frame_timer <= 0){
             frame_timer = 0.1;
-            current_sprite -= 1;
-            if (current_sprite == 3) current_sprite = 6;
+            current_animation_frame += 1;
         }
-        frame_timer -= deltaTime;
-        flip_h = (direction == LEFT);
+        if (direction == LEFT or direction == RIGHT){
+            if (current_animation_frame > 2) current_animation_frame = 0;
+            flip_h = (direction == LEFT);
+        }else{
+            if (current_animation_frame > 3) current_animation_frame = 0;
+            flip_h = false;
+        }
     }else{
-        current_sprite = (int)direction;
+        current_animation_frame = 0;
         flip_h = false;
     }
+
     // Shoot bullets
     if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0){
         Vector2 relative_mouse_position = Vector2({
@@ -90,6 +96,7 @@ void Player::draw() const {
     //     static_cast<int>(stats.GetSize()),
     //     color
     // );
+    int current_sprite = GetFrame();
     Rectangle rect = Rectangle({
         1.0, 1.0, 
         static_cast<float>(sprites[current_sprite].width),
@@ -121,6 +128,19 @@ void Player::draw() const {
         {look_direction.x+GetCenter().x,
         look_direction.y+GetCenter().y,64,64},
         {32,32}, -Vector2Angle(look_direction, {0,-1})*180.0/3.1415926535, WHITE);
+}
+
+int Player::GetFrame() const {
+    if (Vector2LengthSqr(velocity) > 0.1){
+        const std::vector<std::vector<int>> frames_id = {
+            {0,9,0,10},
+            {4,5,6},
+            {2,7,2,8},
+            {4,5,6},
+        };
+        return frames_id[(int)direction][current_animation_frame];
+    }
+    return (int)direction;
 }
 
 Vector2 Player::GetPosition() const {

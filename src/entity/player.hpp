@@ -20,7 +20,7 @@ private:
     Color color;
     PlayerStats stats;
     std::vector<Texture2D> sprites;
-    int current_sprite;
+    int current_animation_frame;
     float invincibility_timer;
     Direction direction;
     float frame_timer;
@@ -37,6 +37,8 @@ public:
     Vector2 GetPosition() const;
     Vector2 GetCenter() const;
     Vector2 GetVelocity() const;
+
+    int GetFrame() const;
 
     void TakeDamage();
     bool IsDead() const;
