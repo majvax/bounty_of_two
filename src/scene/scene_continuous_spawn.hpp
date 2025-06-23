@@ -8,8 +8,8 @@ class SceneContinuousSpawn : public Scene {
     int window_height;
 public:
     SceneContinuousSpawn(int width, int height, int max_enemies_on_screen);
-    void update(float deltatime, ImGui::Context& ctx);
-    void draw(ImGui::Context& ctx);
+    void update(float deltatime, ImGui::Context& ctx) override;
+    void draw(ImGui::Context& ctx) override;
 
     Renderer& GetRenderer() { return renderer; }
     GameState& GetGameState() { return game_state; }

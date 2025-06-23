@@ -9,6 +9,9 @@
 
 class Scene
 {
+
+    static std::unique_ptr<Scene> current_scene;
+
     Renderer renderer;
     GameState game_state;
 public:
@@ -19,4 +22,7 @@ public:
 
     Renderer& GetRenderer() { return renderer; }
     GameState& GetGameState() { return game_state; }
+
+    static Scene* GetCurrentScene();
+    static void SetCurrentScene(std::unique_ptr<Scene> scene);
 };

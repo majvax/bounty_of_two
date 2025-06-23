@@ -6,15 +6,17 @@
 #include "scene/game_state.hpp"
 #include <cstdint>
 #include <memory>
-#include "imgui/fpscounter.hpp"
-#include "imgui/player_gui.hpp"
 
-void draw(raylib::Window& window, ImGui::Context& ctx, Scene& scene)
+#include "scene/menu.hpp"
+
+
+
+void draw(raylib::Window& window, ImGui::Context& ctx, Scene* scene)
 {
-    while (window.Drawing())
+    while (window.Drawing() && scene != nullptr)
     {
         window.ClearBackground(raylib::Color::White());
-        scene.draw(ctx);
+        scene->draw(ctx);
     }
 }
 
@@ -25,17 +27,21 @@ int main()
     window.SetTargetFPS(0);
     HideCursor();
 
-    SceneContinuousSpawn scene = SceneContinuousSpawn(window.GetWidth(), window.GetHeight(), 3);
+
+    Scene::SetCurrentScene(std::make_unique<MenuScene>(window.GetWidth(), window.GetHeight()));
 
 
-    scene.GetGameState().add_player(std::make_unique<Player>(&scene.GetGameState(), window.GetWidth()/2.0, window.GetHeight()/2.0));
 
     ImGui::Context ctx(true);
     ctx.setWindow(&window);
 
     while (!window.ShouldClose())
     {
-        scene.update(window.GetFrameTime(), ctx);
-        draw(window, ctx, scene);
+        if (Scene::GetCurrentScene() == nullptr) {
+            // If no scene is set, we can just continue to the next frame
+            continue;
+        }
+        Scene::GetCurrentScene()->update(GetFrameTime(), ctx);
+        draw(window, ctx, Scene::GetCurrentScene());
     }
 }
