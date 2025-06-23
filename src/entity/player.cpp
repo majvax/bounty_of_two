@@ -110,7 +110,8 @@ void Player::draw() const {
     });
 
     Vector2 look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
-    for (auto* bullet : bullets) {
+
+    for (const auto* bullet : bullets) {
         bullet->draw();
     }
 
