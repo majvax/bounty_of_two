@@ -4,6 +4,7 @@ class SceneContinuousSpawn : public Scene {
     int max_enemies_on_screen;
     int window_width;
     int window_height;
+    int score;
     Renderer renderer;
     GameState game_state;
 public:

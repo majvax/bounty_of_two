@@ -18,6 +18,7 @@ Player::Player(GameState* game_state, float x, float y, Color color)
 }
 
 void Player::update(float deltaTime) {
+    if (IsDead()) return;
     invincibility_timer -= deltaTime;
     shoot_timer -= deltaTime;
 
