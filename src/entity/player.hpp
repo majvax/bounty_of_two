@@ -21,13 +21,13 @@ private:
     PlayerStats stats;
     std::vector<Texture2D> sprites;
     int current_sprite;
+    float invincibility_timer;
     Direction direction;
     float frame_timer;
     bool flip_h;
-    std::vector<PlayerBullet*> bullets;
-    float invincibility_timer;
     float shoot_timer;
     Texture2D aim_sprite;
+    std::vector<PlayerBullet*> bullets;
 
 public:
     Player(GameState* game_state, float x, float y, Color color = BLUE);

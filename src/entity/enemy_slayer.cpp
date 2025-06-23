@@ -5,7 +5,7 @@
 #include <raymath.h>
 
 EnemySlayer::EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color)
-    : color(color), dead(false), player(nullptr), game_state(game_state)
+    : color(color), dead(false), player(nullptr), stats(), game_state(game_state)
 {
     int side = GetRandomValue(0, 3);
 

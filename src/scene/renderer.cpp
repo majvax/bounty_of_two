@@ -19,9 +19,9 @@ Renderer::Renderer(int width, int height): background(raylib::Texture2D("assets/
     background_elements.push_back(raylib::Texture2D("assets/palmier.png"));
     for (size_t i = 0; i < 50; i++) {
         bgelem_positions.push_back({
-            (float)GetRandomValue(0, background.width*4),
-            (float)GetRandomValue(0, background.width*4),
-            GetRandomValue(0, background_elements.size()-1)
+            static_cast<float>(GetRandomValue(0, background.width*4)),
+            static_cast<float>(GetRandomValue(0, background.width*4)),
+            static_cast<float>(GetRandomValue(0, background_elements.size()-1))
         });
     }
 

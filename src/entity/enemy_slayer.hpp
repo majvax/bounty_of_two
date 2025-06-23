@@ -7,12 +7,12 @@ class Player;
 
 class EnemySlayer : public EntityBase {
 private:
-    GameState* game_state;
     Vector2 position;
     Color color;
     bool dead;
     Player* player;
     EnemyStats stats;
+    GameState* game_state;
 
 public:
     EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());

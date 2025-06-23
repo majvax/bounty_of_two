@@ -8,9 +8,9 @@
 #include <algorithm>
 
 Player::Player(GameState* game_state, float x, float y, Color color)
-    : game_state(game_state), position({ x, y }), color(color), current_sprite(0),
+    : game_state(game_state), position({ x, y }), velocity({0,0}), color(color), stats(), sprites(), current_sprite(0),
     invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false), shoot_timer(0.5),
-    aim_sprite(LoadTexture("assets/direction.png")), velocity({0,0}) {
+    aim_sprite(LoadTexture("assets/direction.png")), bullets() {
     for (size_t i = 0; i < 7; i++) {
         Texture2D image = LoadTexture(("assets/crocoimages/image000" + std::to_string(i) + ".png").c_str());
         sprites.push_back(image);
@@ -69,13 +69,11 @@ void Player::update(float deltaTime) {
         shoot_timer = 0.5;
     }else if (Vector2LengthSqr(target_velocity) > 0.1){
         shoot_timer = 0.5;
-    }
-
-    // Bullet management
+    }    // Bullet management
     for (auto* bullet : bullets) {
         bullet->update(deltaTime);
         if (Vector2Distance(GetPosition(), bullet->GetPosition())> 2048 || bullet->GetDespawn()){
-            RemoveBullet(bullet);
+            RemoveBullet(const_cast<PlayerBullet*>(bullet));
             delete (bullet);
             // FIXME: this may crash if you have to delete multiple bullets in a single frame
             // but also i don't see deleting multiple bullets in a frame possible unless using TAS tools
@@ -157,11 +155,11 @@ void Player::Reset(float x, float y) {
 
 void Player::ShootBullet(Vector2 direction){
     Rectangle bullet_hitbox{0,0,64,64};
-    Vector2 velocity = Vector2Multiply(Vector2Normalize(direction), {300,300});
+    Vector2 bullet_velocity = Vector2Multiply(Vector2Normalize(direction), {300,300});
     PlayerBullet* bullet = new PlayerBullet(
         game_state,
         GetCenter().x, GetCenter().y,
-        velocity.x, velocity.y,
+        bullet_velocity.x, bullet_velocity.y,
         16, stats.GetDamage()
     );
     bullets.push_back(bullet);
