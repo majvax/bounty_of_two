@@ -12,9 +12,10 @@ private:
     bool dead;
     Player* player;
     EnemyStats stats;
+    GameState* game_state;
 
 public:
-    EnemySlayer(int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
+    EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
 
     void SetTarget(Player* player);
     void update(float deltaTime) override;

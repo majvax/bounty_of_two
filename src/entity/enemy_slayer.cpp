@@ -1,9 +1,11 @@
 #include "enemy_slayer.hpp"
+#include "../scene/game_state.hpp"
 #include "player.hpp"
 #include <cmath>
+#include <raymath.h>
 
-EnemySlayer::EnemySlayer(int screenWidth, int screenHeight, raylib::Color color)
-    : color(color), dead(false), player(nullptr)
+EnemySlayer::EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color)
+    : color(color), dead(false), player(nullptr), stats(), game_state(game_state)
 {
     int side = GetRandomValue(0, 3);
 
@@ -28,12 +30,15 @@ void EnemySlayer::SetTarget(Player* player) {
 }
 
 void EnemySlayer::update(float deltaTime) {
+    if (IsDead()) return;
     Vector2 target = player->GetCenter();
     Vector2 center = { position.x + stats.GetSize() / 2.0f, position.y + stats.GetSize() / 2.0f };
     Vector2 direction = { target.x - center.x, target.y - center.y };
 
     float length = sqrtf(direction.x * direction.x + direction.y * direction.y);
     if (length <= player->GetStats().GetSize() / 1.5f) {
+        player->TakeDamage();
+        player->Fling(Vector2Multiply(Vector2Normalize(direction), {200, 200}));
         return; // Do not move if too close to the player
     }
 

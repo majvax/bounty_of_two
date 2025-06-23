@@ -1,4 +1,6 @@
 #pragma once
+class GameState;
+
 class EntityBase {
 public:
     virtual ~EntityBase() = default;    
