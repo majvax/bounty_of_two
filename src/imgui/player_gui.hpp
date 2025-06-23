@@ -47,6 +47,10 @@ public:
         #endif
         ImGui::PopID();
 
+        ImGui::PushID(15);
+        ImGui::Text("Velocity: (%.2f, %.2f)", player->GetVelocity().x, player->GetVelocity().y);
+        ImGui::PopID();
+
         ImGui::PushID(20);
         ImGui::Text("Health: %d", player->GetStats().GetLife());
         #ifdef DEBUG

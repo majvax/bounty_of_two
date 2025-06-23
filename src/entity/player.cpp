@@ -4,11 +4,13 @@
 #include <raylib.h>
 #include <raymath.h>
 #include <string>
+#include <iostream>
 #include <algorithm>
 
 Player::Player(GameState* game_state, float x, float y, Color color)
     : game_state(game_state), position({ x, y }), color(color), current_sprite(0),
-    invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false) {
+    invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false), shoot_timer(0.5),
+    aim_sprite(LoadTexture("assets/direction.png")), velocity({0,0}) {
     for (size_t i = 0; i < 7; i++) {
         Texture2D image = LoadTexture(("assets/crocoimages/image000" + std::to_string(i) + ".png").c_str());
         sprites.push_back(image);
@@ -17,6 +19,8 @@ Player::Player(GameState* game_state, float x, float y, Color color)
 
 void Player::update(float deltaTime) {
     invincibility_timer -= deltaTime;
+    shoot_timer -= deltaTime;
+
     Vector2 target_velocity = Vector2();
     if (IsKeyDown(KEY_RIGHT)) {
         target_velocity.x += 1;
@@ -55,13 +59,16 @@ void Player::update(float deltaTime) {
         flip_h = false;
     }
     // Shoot bullets
-    if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)){
+    if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0){
         Vector2 relative_mouse_position = Vector2({
             static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
             static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
         });
         Vector2 look_direction = Vector2Normalize(relative_mouse_position);
         ShootBullet(look_direction);
+        shoot_timer = 0.5;
+    }else if (Vector2LengthSqr(target_velocity) > 0.1){
+        shoot_timer = 0.5;
     }
 
     // Bullet management
@@ -105,18 +112,15 @@ void Player::draw() const {
     });
 
     Vector2 look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
-    // Draw aim
-    DrawRectangle(
-        look_direction.x+GetCenter().x-16,
-        look_direction.y+GetCenter().y-16,
-        32,
-        32,
-        WHITE
-    );
-
     for (auto* bullet : bullets) {
         bullet->draw();
     }
+
+    // Draw aim
+    DrawTexturePro(aim_sprite, {0,0,64,64}, 
+        {look_direction.x+GetCenter().x,
+        look_direction.y+GetCenter().y,64,64},
+        {32,32}, -Vector2Angle(look_direction, {0,-1})*180.0/3.1415926535, WHITE);
 }
 
 Vector2 Player::GetPosition() const {
@@ -125,6 +129,10 @@ Vector2 Player::GetPosition() const {
 
 Vector2 Player::GetCenter() const {
     return { position.x + stats.GetSize() / 2.0f, position.y + stats.GetSize() / 2.0f };
+}
+
+Vector2 Player::GetVelocity() const {
+    return velocity;
 }
 
 void Player::TakeDamage() {

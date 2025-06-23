@@ -26,6 +26,8 @@ private:
     bool flip_h;
     std::vector<PlayerBullet*> bullets;
     float invincibility_timer;
+    float shoot_timer;
+    Texture2D aim_sprite;
 
 public:
     Player(GameState* game_state, float x, float y, Color color = BLUE);
@@ -34,6 +36,7 @@ public:
     void draw() const override;
     Vector2 GetPosition() const;
     Vector2 GetCenter() const;
+    Vector2 GetVelocity() const;
 
     void TakeDamage();
     bool IsDead() const;
