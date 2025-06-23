@@ -8,7 +8,7 @@
 #include "../imgui/player_gui.hpp"
 
 
-Renderer::Renderer(int width, int height): background(raylib::Texture2D("assets/desert.png")) {
+Renderer::Renderer(int width, int height): background(raylib::Texture2D("assets/desert.png")), width(width), height(height) {
     background.SetFilter(TEXTURE_FILTER_BILINEAR);
 
     camera.SetOffset({width / 2.0f, height / 2.0f});
