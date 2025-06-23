@@ -13,7 +13,8 @@ PlayerBullet::PlayerBullet(GameState* game_state, float x, float y, float vx, fl
     position({x,y}),
     velocity({vx,vy}),
     hitbox_radius(hitbox_radius),
-    damage(damage)
+    damage(damage),
+    despawn(false)
 {}
 
 void PlayerBullet::update(float deltaTime){

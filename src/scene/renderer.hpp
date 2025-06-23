@@ -12,7 +12,8 @@ class Renderer
     raylib::Texture2D background;
     raylib::Camera2D camera;
     std::vector<std::unique_ptr<MenuBase>> menus;
-
+    std::vector<raylib::Texture2D> background_elements;
+    std::vector<raylib::Vector3> bgelem_positions;
 public:
     Renderer(int width, int height);
 
