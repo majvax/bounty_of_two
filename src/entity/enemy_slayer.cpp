@@ -5,7 +5,7 @@
 #include <raymath.h>
 
 EnemySlayer::EnemySlayer(GameState* game_state, Vector2 upper_left_bound, int screenWidth, int screenHeight, raylib::Color color)
-    : upper_left_bound(upper_left_bound), color(color), dead(false), player(nullptr), stats(), game_state(game_state)
+    : upper_left_bound(upper_left_bound), color(color), dead(false), player(nullptr), stats(), game_state(game_state), sprite(LoadTexture("assets/enemy.png"))
 {
     int side = GetRandomValue(0, 3);
 
@@ -29,6 +29,12 @@ void EnemySlayer::SetTarget(Player* player) {
     this->player = player;
 }
 
+void EnemySlayer::CheckCollisionWith(EnemySlayer* other){
+    if (Vector2Distance(other->GetPosition(), position) < getStats().GetSize()){
+        position = Vector2Subtract(position, Vector2Multiply(Vector2Subtract(other->GetPosition(), position), {0.1,0.1}));
+    }
+}
+
 void EnemySlayer::update(float deltaTime) {
     if (IsDead()) return;
     Vector2 target = player->GetCenter();
@@ -49,11 +55,23 @@ void EnemySlayer::update(float deltaTime) {
     // Move the slayer towards the player
     position.x += direction.x * stats.GetSpeed() * deltaTime;
     position.y += direction.y * stats.GetSpeed() * deltaTime;
+    
+    for (int i = 0; i < game_state->GetEntities().size(); i++){
+        if (game_state->GetEntities()[i].get() != this){
+            CheckCollisionWith(reinterpret_cast<EnemySlayer*>(game_state->GetEntities()[i].get()));
+        }
+    }
 }
 
 void EnemySlayer::draw() const {
-    DrawRectangle(static_cast<int>(position.x), static_cast<int>(position.y),
-        static_cast<int>(stats.GetSize()), static_cast<int>(stats.GetSize()), color);
+    // DrawRectangle(static_cast<int>(position.x), static_cast<int>(position.y),
+    //     static_cast<int>(stats.GetSize()), static_cast<int>(stats.GetSize()), color);
+    DrawTexturePro(
+        sprite,
+        {0,0,(float)sprite.width, (float)sprite.height},
+        {GetCenter().x,GetCenter().y,sprite.width*stats.GetSize()/40.0f,sprite.height*stats.GetSize()/40.0f},
+        {sprite.width/2.0f,sprite.height/2.0f}, 0.0, WHITE
+    );
 }
 
 Vector2 EnemySlayer::GetPosition() const {
