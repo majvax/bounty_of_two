@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="fr">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport">
+        <link rel="stylesheet" href="../css/main.css">
+        <script src="../js/main.js"></script>
+        <title>Wiki</title>
+    </head>
+    <body>
+        <header>
+            <label class="menu-bouton" for="menu-checkbox">
+                <svg viewBox="0 0 32 32" fill="#666">
+                    <rect x="0" y="4" rx="3" ry="3" width="32" height="3" />
+                    <rect x="0" y="14" rx="3" ry="3" width="32" height="3" />
+                    <rect x="0" y="24" rx="3" ry="3" width="32" height="3" />
+                </svg>
+            </label>
+            <input type="checkbox" id="menu-checkbox" class="menu-checkbox">
+            <nav class="menu">
+                <ul>
+                    <li >
+                        <a href="#">Wiki</a>
+                    </li>
+                    <li >
+                        <a href="#">Telechargement</a>
+                    </li>
+                    <li >
+                        <a href="#">????</a>
+                    </li>
+                </ul>
+            </nav>
+            <img class="logo" src="../logo.png" alt="logo du jeu">
+        </header>
+        <main>
+            <h2>Le Wiki de Bounty Of Two</h2>
+            <div class="slide-container">
+                <div class="custom-slider fade">
+                <div class="slide-index">1 / 5</div>
+                <img class="slide-img1" src="../boule.png" alt="un monstre">
+                <div class="slide-text">La boule de paille, un ennemi tres rapide !</div>
+            </div>
+            <div class="custom-slider fade">
+                <div class="slide-index">2 / 5</div>
+                <img class="slide-img2" src="../cactus.png" alt="un monstre">
+                <div class="slide-text">Le cactus, il envoie ses epines pour vite que son ombre !</div>
+            </div>
+            <div class="custom-slider fade">
+                <div class="slide-index">3 / 5</div>
+                <img class="slide-img2" src="../squelette.png" alt="un monstre">
+                <div class="slide-text">Le squelette, il revient d'entre les morts pour avoir ta peau !</div>
+            </div>
+            <div class="custom-slider fade">
+                <div class="slide-index">4 / 5</div>
+                <img class="slide-img1" src="../taureau.png" alt="un monstre">
+                <div class="slide-text">Le taureau !</div>
+            </div>
+            <div class="custom-slider fade">
+                <div class="slide-index">5 / 5</div>
+                <img class="slide-img1" src="../joueur.png" alt="le personnage">
+                <div class="slide-text">Il est la pour tout tuer sur son passage !</div>
+            </div>
+            <a class="prev" onclick="plusSlides(-1)">❮</a>
+            <a class="next" onclick="plusSlides(1)">❯</a>
+        </div>
+        <br>
+        <div class="slide-dot">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+        </div>
+        </main>
+    </body>
+</html>
