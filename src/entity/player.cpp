@@ -78,15 +78,10 @@ void Player::update(float deltaTime) {
             }
         }
     }
-    target = closest_enemy;    // Shoot bullets
-    if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0 && target && !target->IsDead()){        // Validate target is still in game state before using it
-        bool target_valid = false;
-        for (const auto& enemy : game_state->GetEntities()) {
-            if (enemy.get() == target.get() && !enemy->IsDead()) {
-                target_valid = true;
-                break;
-            }
-        }
+    target = closest_enemy;
+    if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0 && target && !target->IsDead()){
+        bool target_valid = std::any_of(game_state->GetEntities().begin(), game_state->GetEntities().end(),
+            [this](const auto& enemy) { return enemy.get() == target.get() && !enemy->IsDead(); });
         
         if (target_valid) {
             Vector2 target_direction = Vector2Subtract(target->GetCenter(), GetCenter());
@@ -126,16 +121,10 @@ void Player::draw() const {
             static_cast<float>(sprites[current_sprite].height/2.0)
         })), WHITE
     );
-    Vector2 look_direction;
-    if (target) {
+    Vector2 look_direction;    if (target) {
         // Validate target is still in game state before using it
-        bool target_valid = false;
-        for (const auto& enemy : game_state->GetEntities()) {
-            if (enemy.get() == target.get() && !enemy->IsDead()) {
-                target_valid = true;
-                break;
-            }
-        }
+        bool target_valid = std::any_of(game_state->GetEntities().begin(), game_state->GetEntities().end(),
+            [this](const auto& enemy) { return enemy.get() == target.get() && !enemy->IsDead(); });
         
         if (target_valid) {
             Vector2 target_direction = Vector2Subtract(target->GetCenter(), GetCenter());            
