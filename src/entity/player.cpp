@@ -1,5 +1,6 @@
 #include "player.hpp"
 #include "../scene/game_state.hpp"
+#include "enemy_slayer.hpp"
 #include <raylib-cpp.hpp>
 #include <raylib.h>
 #include <raymath.h>
@@ -7,11 +8,12 @@
 #include <iostream>
 #include <algorithm>
 #include <vector>
+#include <cfloat>
 
 Player::Player(GameState* game_state, float x, float y, Color color)
     : game_state(game_state), position({ x, y }), velocity({0,0}), color(color), stats(), sprites(), current_animation_frame(0),
     invincibility_timer(0), direction(DOWN), frame_timer(0), flip_h(false), shoot_timer(0.5),
-    aim_sprite(LoadTexture("assets/direction.png")), bullets() {
+    aim_sprite(LoadTexture("assets/direction.png")), bullets(), target(nullptr) {
     for (size_t i = 0; i < 11; i++) {
         Texture2D image = LoadTexture(("assets/crocoimages/image" + std::to_string(i) + ".png").c_str());
         sprites.push_back(image);
@@ -63,39 +65,52 @@ void Player::update(float deltaTime) {
     }else{
         current_animation_frame = 0;
         flip_h = false;
+    }    // Find closest enemy and set as target
+    float closest_distance = FLT_MAX;
+    EnemyBase* closest_enemy = nullptr;
+    
+    for (const auto& enemy : game_state->GetEntities()) {
+        if (enemy && !enemy->IsDead()) {
+            float distance = Vector2Distance(GetCenter(), enemy->GetPosition());
+            if (distance < closest_distance) {
+                closest_distance = distance;
+                closest_enemy = enemy.get();
+            }
+        }
     }
-
-    // Shoot bullets
-    if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0){
-        Vector2 relative_mouse_position = Vector2({
-            static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
-            static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
-        });
-        Vector2 look_direction = Vector2Normalize(relative_mouse_position);
-        ShootBullet(look_direction);
-        shoot_timer = 0.5;
+    target = closest_enemy;    // Shoot bullets
+    if (Vector2LengthSqr(target_velocity) < 0.1 && shoot_timer < 0.0 && target && !target->IsDead()){        // Validate target is still in game state before using it
+        bool target_valid = false;
+        for (const auto& enemy : game_state->GetEntities()) {
+            if (enemy.get() == target.get() && !enemy->IsDead()) {
+                target_valid = true;
+                break;
+            }
+        }
+        
+        if (target_valid) {
+            Vector2 target_direction = Vector2Subtract(target->GetCenter(), GetCenter());
+            Vector2 look_direction = Vector2Normalize(target_direction);
+            ShootBullet(look_direction);            shoot_timer = 0.5;
+        } else {
+            target = static_cast<EnemyBase*>(nullptr); // Clear invalid target
+        }
     }else if (Vector2LengthSqr(target_velocity) > 0.1){
         shoot_timer = 0.5;
-    }    // Bullet management
-    for (auto* bullet : bullets) {
+    }// Bullet management
+    for (auto it = bullets.begin(); it != bullets.end();) {
+        auto* bullet = *it;
         bullet->update(deltaTime);
-        if (Vector2Distance(GetPosition(), bullet->GetPosition())> 2048 || bullet->GetDespawn()){
-            RemoveBullet(const_cast<PlayerBullet*>(bullet));
-            delete (bullet);
-            // FIXME: this may crash if you have to delete multiple bullets in a single frame
-            // but also i don't see deleting multiple bullets in a frame possible unless using TAS tools
+        if (Vector2Distance(GetPosition(), bullet->GetPosition()) > 2048 || bullet->GetDespawn()) {
+            delete bullet;
+            it = bullets.erase(it);
+        } else {
+            ++it;
         }
     }
 }
 
 void Player::draw() const {
-    // DrawRectangle(
-    //     static_cast<int>(position.x),
-    //     static_cast<int>(position.y),
-    //     static_cast<int>(stats.GetSize()),
-    //     static_cast<int>(stats.GetSize()),
-    //     color
-    // );
     int current_sprite = GetFrame();
     Rectangle rect = Rectangle({
         1.0, 1.0, 
@@ -111,23 +126,49 @@ void Player::draw() const {
             static_cast<float>(sprites[current_sprite].height/2.0)
         })), WHITE
     );
-
-    Vector2 relative_mouse_position = Vector2({
-        static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
-        static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
-    });
-
-    Vector2 look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+    Vector2 look_direction;
+    if (target) {
+        // Validate target is still in game state before using it
+        bool target_valid = false;
+        for (const auto& enemy : game_state->GetEntities()) {
+            if (enemy.get() == target.get() && !enemy->IsDead()) {
+                target_valid = true;
+                break;
+            }
+        }
+        
+        if (target_valid) {
+            Vector2 target_direction = Vector2Subtract(target->GetCenter(), GetCenter());            
+            look_direction = Vector2Multiply(Vector2Normalize(target_direction), Vector2({64,64}));
+        } else {
+            target = nullptr; // Clear invalid target
+            Vector2 relative_mouse_position = Vector2({
+                static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
+                static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
+            });
+            look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+        }
+    } else {
+        Vector2 relative_mouse_position = Vector2({
+            static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
+            static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
+        });
+        look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+    }
 
     for (const auto* bullet : bullets) {
         bullet->draw();
     }
 
     // Draw aim
+    float rotation = 0.0f;
+    if (Vector2LengthSqr(look_direction) > 0.0f) {
+        rotation = -Vector2Angle(look_direction, {0,-1})*180.0/3.1415926535;
+    }
     DrawTexturePro(aim_sprite, {0,0,64,64}, 
         {look_direction.x+GetCenter().x,
         look_direction.y+GetCenter().y,64,64},
-        {32,32}, -Vector2Angle(look_direction, {0,-1})*180.0/3.1415926535, WHITE);
+        {32,32}, rotation, WHITE);
 }
 
 int Player::GetFrame() const {

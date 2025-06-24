@@ -4,14 +4,14 @@
 #include "game_state.hpp"
 #include "renderer.hpp"
 
-
-
+#include <memory>
+#include <vector>
 
 class Scene
 {
 
-    static std::unique_ptr<Scene> current_scene;
-
+    static std::vector<std::shared_ptr<Scene>> current_scenes;
+protected:
     Renderer renderer;
     GameState game_state;
 public:
@@ -21,8 +21,8 @@ public:
 
 
     Renderer& GetRenderer() { return renderer; }
-    GameState& GetGameState() { return game_state; }
-
-    static Scene* GetCurrentScene();
-    static void SetCurrentScene(std::unique_ptr<Scene> scene);
+    GameState& GetGameState() { return game_state; }    static void AddScene(std::shared_ptr<Scene> scene);
+    static void SetScene(std::shared_ptr<Scene> scene);
+    static void PopScene();
+    static const decltype(current_scenes) GetCurrentScenes();
 };

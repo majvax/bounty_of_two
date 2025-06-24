@@ -8,13 +8,15 @@ MenuScene::MenuScene(int width, int height) : Scene(width, height), title_textur
 }
 
 void MenuScene::update(float deltatime, ImGui::Context& ctx) {
-     if (raylib::Keyboard::IsKeyDown(KEY_SPACE)) {
-        auto new_scene = std::make_unique<SceneContinuousSpawn>(
+     if (raylib::Keyboard::IsKeyPressed(KEY_SPACE)) {
+        auto new_scene = std::make_shared<SceneContinuousSpawn>(
             GetRenderer().GetWidth(), 
             GetRenderer().GetHeight(), 
             3
         );
         
+        Scene::SetScene(new_scene);
+
         // Add player to the game state
         new_scene->GetGameState().add_player(
             std::make_unique<Player>(
@@ -28,9 +30,6 @@ void MenuScene::update(float deltatime, ImGui::Context& ctx) {
         if (!new_scene->GetGameState().GetPlayers().empty()) {
             ctx.setPlayer(new_scene->GetGameState().GetPlayers()[0].get());
         }
-        
-        // Now set the current scene
-        Scene::SetCurrentScene(std::move(new_scene));
     }
 }
 

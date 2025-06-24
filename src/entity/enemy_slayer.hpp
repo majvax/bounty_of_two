@@ -5,8 +5,9 @@
 
 class Player;
 
-class EnemySlayer : public EntityBase {
+class EnemySlayer : public EnemyBase {
 private:
+    Vector2 upper_left_bound;
     Vector2 position;
     Color color;
     bool dead;
@@ -15,15 +16,15 @@ private:
     GameState* game_state;
 
 public:
-    EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
+    EnemySlayer(GameState* game_state,Vector2 upper_left_bound, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
 
-    void SetTarget(Player* player);
+    void SetTarget(Player* player) override;
     void update(float deltaTime) override;
     void draw() const override;
-    Vector2 GetPosition() const;
-    float GetSize() const;
+    Vector2 GetPosition() const override;
+    Vector2 GetCenter() const override;
 
-    void MarkAsDead();
-    bool IsDead() const;
-    EnemyStats& getStats() { return stats; }
+    void MarkAsDead() override;
+    bool IsDead() const override;
+    EnemyStats& getStats() override { return stats; }
 };
