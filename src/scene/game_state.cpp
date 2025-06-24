@@ -3,7 +3,17 @@
 #include "../entity/base.hpp"
 #include "../entity/player.hpp"
 #include <algorithm>
+#include <memory>
 
+
+
+GameState::GameState() = default;
+
+
+GameState& GameState::GetInstance() {
+    static GameState gs_instance;
+    return gs_instance;
+}
 
 void GameState::update(float deltatime)
 {

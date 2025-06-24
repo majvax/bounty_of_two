@@ -6,18 +6,31 @@
 #include <memory>
 #include "menu.hpp"
 #include "esc_menu.hpp"
+#include "upgrade_scene.hpp"
 
 SceneContinuousSpawn::SceneContinuousSpawn(int width, int height, int max_enemies_on_screen)
-    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height), renderer(width, height),
-    game_state(), score(0), exp(0), exp_pts(0) {}
+    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height),
+    score(0), exp(0) {}
 
 
 void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
-    if (IsKeyPressed(KEY_ESCAPE)) {
-        Scene::AddScene(std::make_shared<EscMenuScene>(window_width, window_height));
+
+    if (Scene::GetCurrentScenes().size() == 1) scene_paused = false;
+
+    if (scene_paused) {
         return;
     }
 
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        Scene::AddScene(std::make_shared<EscMenuScene>(window_width, window_height));
+        scene_paused = true;
+    }
+
+    if (exp >= 100) {
+        exp -= 100;
+        Scene::AddScene(std::make_shared<UpgradeScene>(window_width, window_height));
+        scene_paused = true;
+    }
 
     if (GetGameState().GetEntities().size() < max_enemies_on_screen){
         auto pos = GetGameState().GetPlayers().front()->GetCenter();
@@ -39,8 +52,7 @@ void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
         if (entity_enemy != nullptr){
             if (entity_enemy->IsDead()){
                 score++;
-                exp+= GetRandomValue(2,5);
-                if (exp >= 100){ exp_pts += 1; exp -= 100; }
+                exp+= GetRandomValue(40,50);
                 GetGameState().remove_entity(entity_enemy);
                 i--;
             }
@@ -53,6 +65,8 @@ void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
             if (!GetGameState().GetPlayers()[i]->IsDead()){someone_still_alive = true;}
         }
         if (not someone_still_alive){
+            GetGameState().GetPlayersMut().clear();
+            GetGameState().GetEntitiesMut().clear();
             Scene::SetScene(std::make_unique<MenuScene>(window_width, window_height));
         }
     }
@@ -64,5 +78,5 @@ void SceneContinuousSpawn::draw(ImGui::Context& ctx) {
     DrawText(std::to_string(score).c_str(), window_width/2, 14, 64, {0,0,0,128});
     DrawText(std::to_string(score).c_str(), window_width/2, 10, 64, WHITE);
 
-    DrawText((std::to_string(exp)+"/100 | "+std::to_string(exp_pts) + " points").c_str(), 16, window_height-64, 16, BLACK);
+    DrawText((std::to_string(exp)+"/100").c_str(), 16, window_height-64, 16, BLACK);
 }
