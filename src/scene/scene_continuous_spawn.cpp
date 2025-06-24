@@ -8,7 +8,8 @@
 #include "esc_menu.hpp"
 
 SceneContinuousSpawn::SceneContinuousSpawn(int width, int height, int max_enemies_on_screen)
-    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height), score(0) {}
+    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height), renderer(width, height),
+    game_state(), score(0), exp(0), exp_pts(0) {}
 
 
 void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
@@ -38,6 +39,8 @@ void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
         if (entity_enemy != nullptr){
             if (entity_enemy->IsDead()){
                 score++;
+                exp+= GetRandomValue(2,5);
+                if (exp >= 100){ exp_pts += 1; exp -= 100; }
                 GetGameState().remove_entity(entity_enemy);
                 i--;
             }
@@ -60,4 +63,6 @@ void SceneContinuousSpawn::draw(ImGui::Context& ctx) {
 
     DrawText(std::to_string(score).c_str(), window_width/2, 14, 64, {0,0,0,128});
     DrawText(std::to_string(score).c_str(), window_width/2, 10, 64, WHITE);
+
+    DrawText((std::to_string(exp)+"/100 | "+std::to_string(exp_pts) + " points").c_str(), 16, window_height-64, 16, BLACK);
 }
