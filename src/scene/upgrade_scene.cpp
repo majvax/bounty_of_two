@@ -1,26 +1,30 @@
-#include "esc_menu.hpp"
+#include "upgrade_scene.hpp"
 #include "menu.hpp"
 #include "scene.hpp"
 #include "../imgui/menu.hpp"
-#include "scene_continuous_spawn.hpp"
+#include <raylib-cpp.hpp>
 
-EscMenuScene::EscMenuScene(int width, int height) : Scene(width, height), title_texture("assets/title.png") {
-    title_texture.SetFilter(TEXTURE_FILTER_BILINEAR);
-}
 
-void EscMenuScene::update(float deltatime, ImGui::Context& ctx) {
+
+
+UpgradeScene::UpgradeScene(int width, int height) : Scene(width, height), 
+    upgrades(get_upgrades()) {}
+
+void UpgradeScene::update(float deltatime, ImGui::Context& ctx) {
+    using namespace raylib::Keyboard;
     if (raylib::Keyboard::IsKeyPressed(KEY_ONE)) {
+        upgrades[0]->execute(GetGameState());
         Scene::PopScene();
     } else if (raylib::Keyboard::IsKeyPressed(KEY_TWO)) {
-        GetGameState().GetPlayersMut().clear();
-        GetGameState().GetEntitiesMut().clear();
-        Scene::SetScene(std::make_shared<MenuScene>(GetRenderer().GetWidth(), GetRenderer().GetHeight()));
+        upgrades[1]->execute(GetGameState());
+        Scene::PopScene();
     } else if (raylib::Keyboard::IsKeyPressed(KEY_THREE)) {
-        exit(0);
+        upgrades[2]->execute(GetGameState());
+        Scene::PopScene();
     }
 }
 
-void EscMenuScene::draw(ImGui::Context& ctx) {
+void UpgradeScene::draw(ImGui::Context& ctx) {
     raylib::Rectangle overlay(0, 0, GetRenderer().GetWidth(), GetRenderer().GetHeight());
     overlay.Draw({0, 0, 0, 180});
 
@@ -31,18 +35,16 @@ void EscMenuScene::draw(ImGui::Context& ctx) {
     int centerX = GetRenderer().GetWidth() / 2 - boxWidth / 2;
     raylib::Font font;
 
-    constexpr static const char* options[] = {
-        "1. Start Game",
-        "2. Return to Main Menu ",
-        "3. Exit Game"
-    };
-
     for (int i = 0; i < 3; ++i) {
         int y = startY + i * (boxHeight + spacing);
         raylib::Rectangle box(centerX, y, boxWidth, boxHeight);
         box.Draw({40, 40, 40, 220});
         box.DrawLines({255, 255, 255, 255}, 2.0f);
-        raylib::Text indice(font, options[i], 25);
+        std::string label = std::to_string(upgrades[i]->get_type());
+        raylib::Text indice(font, label, 25);
         indice.Draw({static_cast<float>(centerX) + boxWidth / 2 - indice.Measure() / 2, static_cast<float>(y) + boxHeight / 2 });
     }
+
+    raylib::Text title(font, "Choose an upgrade:", 25);
+    title.Draw({static_cast<float>(GetRenderer().GetWidth()) / 2 - title.Measure() / 2, 50});
 }
