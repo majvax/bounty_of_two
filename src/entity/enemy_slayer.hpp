@@ -27,6 +27,6 @@ public:
 
     void MarkAsDead() override;
     bool IsDead() const override;
-    void CheckCollisionWith(EnemySlayer* other);
+    void CheckCollisionWith(const EnemySlayer* other);
     EnemyStats& getStats() override { return stats; }
 };
