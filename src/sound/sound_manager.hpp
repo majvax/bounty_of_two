@@ -19,7 +19,7 @@ public:
         return instance;
     }
 
-    void SetMasterVolume(float volume) { SetMasterVolume(volume); }
+    static void SetMasterVolume(float volume) { ::SetMasterVolume(volume); }
     void SetMusicVolume(int index, float volume) {
         if (index < 0 || index >= music_streams.size()) return;
         music_streams[index].SetVolume(volume);
