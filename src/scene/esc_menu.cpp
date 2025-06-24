@@ -8,7 +8,29 @@ EscMenuScene::EscMenuScene(int width, int height) : Scene(width, height), title_
     title_texture.SetFilter(TEXTURE_FILTER_BILINEAR);
 }
 
-void EscMenuScene::update(float deltatime, ImGui::Context& ctx) {}
+void EscMenuScene::update(float deltatime, ImGui::Context& ctx) {
+    if (IsKeyPressed(KEY_SPACE))
+    {
+        Scene::PopScene();
+    }
+
+    if (IsKeyPressed(KEY_BACKSPACE))
+    {
+        if (ctx.getWindow()) {
+            ctx.getWindow()->Close();
+        } else {
+            std::exit(0);
+        }
+    }
+
+    if (IsKeyPressed(KEY_M)) {
+        auto menu_scene = std::make_shared<MenuScene>(
+            ctx.getWindow()->GetWidth(), 
+            ctx.getWindow()->GetHeight()
+        );
+        Scene::SetScene(menu_scene);
+    }
+}
 
 void EscMenuScene::draw(ImGui::Context& ctx) {
     DrawRectangle(0, 0, GetRenderer().GetWidth(), GetRenderer().GetHeight(), {0, 0, 0, 150});
