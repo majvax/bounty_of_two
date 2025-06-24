@@ -14,6 +14,7 @@ private:
     Player* player;
     EnemyStats stats;
     GameState* game_state;
+    Texture2D sprite;
 
 public:
     EnemySlayer(GameState* game_state,Vector2 upper_left_bound, int screenWidth, int screenHeight, raylib::Color color = raylib::Color::Red());
@@ -26,5 +27,6 @@ public:
 
     void MarkAsDead() override;
     bool IsDead() const override;
+    void CheckCollisionWith(EnemySlayer* other);
     EnemyStats& getStats() override { return stats; }
 };

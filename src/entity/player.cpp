@@ -1,6 +1,7 @@
 #include "player.hpp"
 #include "../scene/game_state.hpp"
 #include "enemy_slayer.hpp"
+#include <cstdlib>
 #include <raylib-cpp.hpp>
 #include <raylib.h>
 #include <raymath.h>
@@ -108,41 +109,51 @@ void Player::update(float deltaTime) {
 void Player::draw() const {
     int current_sprite = GetFrame();
     Rectangle rect = Rectangle({
-        1.0, 1.0, 
+        0.0, 0.0, 
         static_cast<float>(sprites[current_sprite].width),
         static_cast<float>(sprites[current_sprite].height)
     });
     rect.width *= flip_h ? -1.0 : 1.0;
-    DrawTextureRec( // draw the current sprite centered on the center position
+    Vector2 dest_topleft = Vector2Subtract(GetCenter(), Vector2({
+        static_cast<float>(abs(rect.width)*stats.GetSize()/80.0f),
+        static_cast<float>(rect.height*stats.GetSize()/80.0f)
+    }));
+    DrawTexturePro( // draw the current sprite centered on the center position
         sprites[current_sprite],
         rect,
-        Vector2Subtract(GetCenter(), Vector2({
-            static_cast<float>(sprites[current_sprite].width/2.0),
-            static_cast<float>(sprites[current_sprite].height/2.0)
-        })), WHITE
+        {
+            dest_topleft.x,
+            dest_topleft.y,
+            sprites[current_sprite].width*stats.GetSize()/40.0f,
+            sprites[current_sprite].height*stats.GetSize()/40.0f
+        },
+        {0,0}, 0,WHITE
     );
-    Vector2 look_direction;    if (target) {
+
+    float target_offset = stats.GetSize()+24;
+    Vector2 look_direction = {0,0};
+    if (target) {
         // Validate target is still in game state before using it
         bool target_valid = std::any_of(game_state->GetEntities().begin(), game_state->GetEntities().end(),
             [this](const auto& enemy) { return enemy.get() == target.get() && !enemy->IsDead(); });
         
         if (target_valid) {
             Vector2 target_direction = Vector2Subtract(target->GetCenter(), GetCenter());            
-            look_direction = Vector2Multiply(Vector2Normalize(target_direction), Vector2({64,64}));
+            look_direction = Vector2Multiply(Vector2Normalize(target_direction), Vector2({target_offset,target_offset}));
         } else {
             target = nullptr; // Clear invalid target
             Vector2 relative_mouse_position = Vector2({
                 static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
                 static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
             });
-            look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+            look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({target_offset,target_offset}));
         }
     } else {
         Vector2 relative_mouse_position = Vector2({
             static_cast<float>(GetMouseX()-GetScreenWidth()/2.0),
             static_cast<float>(GetMouseY()-GetScreenHeight()/2.0),
         });
-        look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({64,64}));
+        look_direction = Vector2Multiply(Vector2Normalize(relative_mouse_position), Vector2({target_offset,target_offset}));
     }
 
     for (const auto* bullet : bullets) {
