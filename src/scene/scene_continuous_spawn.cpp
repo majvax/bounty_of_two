@@ -3,16 +3,27 @@
 #include "scene.hpp"
 #include <iostream>
 #include <string>
+#include <memory>
+#include "menu.hpp"
+#include "esc_menu.hpp"
 
 SceneContinuousSpawn::SceneContinuousSpawn(int width, int height, int max_enemies_on_screen)
-    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height), score(0), renderer(width, height),
-    game_state() {}
+    : Scene(width, height), max_enemies_on_screen(max_enemies_on_screen), window_width(width), window_height(height), score(0) {}
 
 
 void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
-    //std::cout << "bonjour" << std::endl;
+    if (IsKeyPressed(KEY_ESCAPE)) {
+        Scene::AddScene(std::make_shared<EscMenuScene>(window_width, window_height));
+        return;
+    }
+
+
     if (GetGameState().GetEntities().size() < max_enemies_on_screen){
-        auto slayer = std::make_unique<EnemySlayer>(&GetGameState(), window_width, window_height);
+        auto pos = GetGameState().GetPlayers().front()->GetCenter();
+        auto upper_left_bound = Vector2{pos.x - window_width / 2.0f, pos.y - window_height / 2.0f};
+
+
+        auto slayer = std::make_unique<EnemySlayer>(&GetGameState(), upper_left_bound, window_width, window_height);
         slayer->SetTarget(GetGameState().GetPlayers().front().get());
         // move the slayer ownership to the scene
         GetGameState().add_entity(std::move(slayer));
@@ -39,7 +50,7 @@ void SceneContinuousSpawn::update(float deltatime, ImGui::Context& ctx ) {
             if (!GetGameState().GetPlayers()[i]->IsDead()){someone_still_alive = true;}
         }
         if (not someone_still_alive){
-            //Scene::SetCurrentScene(std::make_unique<MenuScene>(window_width, window_width));
+            Scene::SetScene(std::make_unique<MenuScene>(window_width, window_height));
         }
     }
 }

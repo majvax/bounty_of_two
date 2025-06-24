@@ -4,23 +4,23 @@
 #include <cmath>
 #include <raymath.h>
 
-EnemySlayer::EnemySlayer(GameState* game_state, int screenWidth, int screenHeight, raylib::Color color)
-    : color(color), dead(false), player(nullptr), stats(), game_state(game_state)
+EnemySlayer::EnemySlayer(GameState* game_state, Vector2 upper_left_bound, int screenWidth, int screenHeight, raylib::Color color)
+    : upper_left_bound(upper_left_bound), color(color), dead(false), player(nullptr), stats(), game_state(game_state)
 {
     int side = GetRandomValue(0, 3);
 
     switch (side) {
-    case 0:
-        position = { (float)GetRandomValue(0, screenWidth), -stats.GetSize()};
+    case 0:  // Spawn from the top
+        position = { (float)GetRandomValue(upper_left_bound.x, upper_left_bound.x + screenWidth), upper_left_bound.y };
         break;
-    case 1:
-        position = { (float)GetRandomValue(0, screenWidth), (float)screenHeight + stats.GetSize()};
+    case 1: // Spawn from the bottom
+        position = { (float)GetRandomValue(upper_left_bound.x, upper_left_bound.x + screenWidth), upper_left_bound.y + screenHeight };
         break;
-    case 2:
-        position = { -stats.GetSize(), (float)GetRandomValue(0, screenHeight)};
+    case 2: // Spawn from the left
+        position = { upper_left_bound.x, (float)GetRandomValue(upper_left_bound.y, upper_left_bound.y + screenHeight) };
         break;
-    case 3:
-        position = { (float)screenWidth + stats.GetSize(), (float)GetRandomValue(0, screenHeight)};
+    case 3: // Spawn from the right
+        position = { upper_left_bound.x + screenWidth, (float)GetRandomValue(upper_left_bound.y, upper_left_bound.y + screenHeight) };
         break;
     }
 }
@@ -58,6 +58,10 @@ void EnemySlayer::draw() const {
 
 Vector2 EnemySlayer::GetPosition() const {
     return position;
+}
+
+Vector2 EnemySlayer::GetCenter() const {
+    return { position.x + stats.GetSize() / 2.0f, position.y + stats.GetSize() / 2.0f };
 }
 
 

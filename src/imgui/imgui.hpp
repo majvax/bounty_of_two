@@ -19,11 +19,12 @@ namespace ImGui
         observer_ptr<Player> m_player{nullptr};
         observer_ptr<raylib::Window> m_window{nullptr};
 
-    public:
-        explicit Context(bool darkTheme)
+    public:        explicit Context(bool darkTheme)
         {
 			::rlImGuiSetup(darkTheme);
             ImGui::GetIO().IniFilename = nullptr;
+            // Disable ImGui mouse cursor to prevent overriding Raylib's cursor settings
+            ImGui::GetIO().MouseDrawCursor = false;
         }
 
         explicit Context(bool darkTheme, Player* player, raylib::Window* window)
@@ -31,6 +32,7 @@ namespace ImGui
         {
             ::rlImGuiSetup(darkTheme);
             ImGui::GetIO().IniFilename = nullptr;
+            ImGui::GetIO().MouseDrawCursor = false;
         }
 
 

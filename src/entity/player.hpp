@@ -5,6 +5,8 @@
 #include "player_stats.hpp"
 #include "player_bullet.hpp"
 
+#include "../utils/observer_ptr.hpp"
+
 enum Direction {
     DOWN,
     LEFT,
@@ -28,6 +30,7 @@ private:
     float shoot_timer;
     Texture2D aim_sprite;
     std::vector<PlayerBullet*> bullets;
+    mutable observer_ptr<EnemyBase> target;
 
 public:
     Player(GameState* game_state, float x, float y, Color color = BLUE);
