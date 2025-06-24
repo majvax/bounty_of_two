@@ -29,7 +29,7 @@ void EnemySlayer::SetTarget(Player* player) {
     this->player = player;
 }
 
-void EnemySlayer::CheckCollisionWith(EnemySlayer* other){
+void EnemySlayer::CheckCollisionWith(const EnemySlayer* other){
     if (Vector2Distance(other->GetPosition(), position) < getStats().GetSize()){
         position = Vector2Subtract(position, Vector2Multiply(Vector2Subtract(other->GetPosition(), position), {0.1,0.1}));
     }
@@ -64,8 +64,6 @@ void EnemySlayer::update(float deltaTime) {
 }
 
 void EnemySlayer::draw() const {
-    // DrawRectangle(static_cast<int>(position.x), static_cast<int>(position.y),
-    //     static_cast<int>(stats.GetSize()), static_cast<int>(stats.GetSize()), color);
     DrawTexturePro(
         sprite,
         {0,0,(float)sprite.width, (float)sprite.height},
