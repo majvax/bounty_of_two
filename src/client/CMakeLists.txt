@@ -1,4 +1,10 @@
-add_executable(client main.cpp)
+add_executable(client 
+    main.cpp
+    engine/engine.cpp
+    scene/cube.cpp
+    scene/title.cpp
+
+    )
 
 target_link_libraries(client PRIVATE
     SFML::Graphics
@@ -12,4 +18,5 @@ target_link_libraries(client PRIVATE
 
 target_include_directories(client PRIVATE
     "${imgui_SOURCE_DIR}"
+    "./"
 )

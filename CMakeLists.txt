@@ -21,6 +21,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 
+# Explicitly disable automatic C++20 module scanning to avoid injecting
+# unsupported experimental flags like -fmodules-ts with some GCC/MinGW builds.
+set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+
 include(Dependencies.cmake)
 
 # Add source tree
