@@ -9,7 +9,7 @@ private:
     sf::Text titleText; // uses Config::default_font()
 
 public:
-    explicit TitleScene(sf::Window& window);
+    explicit TitleScene(Engine& engine);
 
     void update(float deltaTime) override;
     void render(sf::RenderTarget& target) override { target.draw(titleText); }

@@ -23,7 +23,7 @@ private:
 
 
 public:
-    explicit SceneCube(sf::Window& window) : SceneABC(window) {};
+    explicit SceneCube(Engine& engine) : SceneABC(engine) {};
     SceneCube(const SceneCube&) = delete;
     SceneCube& operator=(const SceneCube&) = delete;
     SceneCube(SceneCube&&) = delete;
@@ -33,7 +33,7 @@ public:
 
     void update(float deltaTime) override;
     void render(sf::RenderTarget& target) override;
-    void handleEvent(const sf::Event& event) override {};
+    void handleEvent(const sf::Event& event) override;
     void render_menu() override;
     void init() override {};
 };

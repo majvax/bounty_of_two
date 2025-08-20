@@ -30,6 +30,7 @@ cpmaddpackage(
     GITHUB_REPOSITORY SFML/imgui-sfml
     OPTIONS
     "IMGUI_SFML_FIND_SFML OFF"
+    "IMGUI_DIR ${imgui_SOURCE_DIR}"
 )
 
 target_include_directories(ImGui-SFML PRIVATE "${imgui_SOURCE_DIR}")

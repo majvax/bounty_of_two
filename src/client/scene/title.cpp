@@ -5,7 +5,7 @@
 constexpr auto font_size = 42;
 
 
-TitleScene::TitleScene(sf::Window& window) : SceneABC(window), titleText(Config::default_font().value(), "bounty of two", font_size)
+TitleScene::TitleScene(Engine& engine) : SceneABC(engine), titleText(Config::default_font().value(), "bounty of two", font_size)
 {
     constexpr float outline_thickness = 2.F;
     titleText.setFillColor(sf::Color::Black);
@@ -16,9 +16,10 @@ TitleScene::TitleScene(sf::Window& window) : SceneABC(window), titleText(Config:
 
 void TitleScene::update(float /*deltaTime*/)
 {
+
     constexpr float half = 0.5F;
     const auto bounds = titleText.getLocalBounds();
-    const auto window_size = static_cast<sf::Vector2f>(window.getSize());
+    const auto window_size = static_cast<sf::Vector2f>(engine.getWindow().getSize());
     float x = ((window_size.x - bounds.size.x) * half) - bounds.position.x;
     constexpr float position_y = 0.25F;
     float y = ((window_size.y - bounds.size.y) * position_y) - bounds.position.y;

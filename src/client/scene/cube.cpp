@@ -3,7 +3,9 @@
 #include <cmath>
 #include <imgui.h>
 #include <numbers>
-
+#include <spdlog/spdlog.h>
+#include "scene/test.hpp"
+#include <memory>
 
 constexpr std::array<sf::Vector3f, 8> cube_vertices = { { { -1, -1, -1 },
   { 1, -1, -1 },
@@ -36,8 +38,8 @@ void SceneCube::update(float deltaTime)
     if (angleY < START_ANGLE) { angleY += std::numbers::pi_v<float> * 2; }
 
     constexpr float centerScale = 0.5F;
-    sf::Vector2f center{ static_cast<float>(window.getSize().x) * centerScale,
-        static_cast<float>(window.getSize().y) * centerScale };
+    sf::Vector2f center{ static_cast<float>(engine.getWindow().getSize().x) * centerScale,
+        static_cast<float>(engine.getWindow().getSize().y) * centerScale };
 
 
     constexpr float minZ = 0.2F;
@@ -124,4 +126,18 @@ void SceneCube::render_menu()
     ImGui::TextUnformatted(fps_text.c_str());
 
     ImGui::End();
+}
+
+
+
+void SceneCube::handleEvent(const sf::Event& event)
+{
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>())
+    {
+        if (key->scancode == sf::Keyboard::Scan::Enter) {
+            spdlog::info("Enter key pressed, clearing scene and adding next scene");
+            engine.clearScenes();
+            engine.pushScene(std::make_unique<TestScene>(engine));
+        }
+    }
 }

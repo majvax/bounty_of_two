@@ -1,13 +1,14 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include "engine/engine.hpp"
 
 class SceneABC
 {
 protected:
-    sf::Window& window;
+    Engine& engine;
 
 public:
-    explicit SceneABC(sf::Window& window) : window(window) {};
+    explicit SceneABC(Engine& engine): engine(engine) {};
     SceneABC(const SceneABC&) = delete;
     SceneABC& operator=(const SceneABC&) = delete;
     SceneABC(SceneABC&&) = delete;
