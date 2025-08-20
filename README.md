@@ -2,6 +2,8 @@
 
 This document describes the ongoing **rewrite from scratch** of `bounty_of_two` on the `rewrite` branch: goals, architecture, technology choices, current progress, and next steps.
 
+> I'm waiting for c++26 so badly. typeid().name is a joke, and I want to use reflection.
+
 ## Overview
 
 The rewrite replaces an earlier prototype with a cleaner, modular C++23 codebase focused on:

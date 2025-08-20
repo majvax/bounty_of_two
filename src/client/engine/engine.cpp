@@ -1,4 +1,5 @@
 #include "engine.hpp"
+#include "imgui.h"
 #include "scene/base.hpp"
 
 Engine::Engine()
@@ -10,6 +11,7 @@ Engine::Engine()
     window.setVerticalSyncEnabled(true);
     window.setFramerateLimit(target_framerate);
     if (!ImGui::SFML::Init(window)) { spdlog::error("Failed to initialize ImGui-SFML"); }
+    ImGui::GetIO().IniFilename = nullptr;
 };
 
 Engine::~Engine() { ImGui::SFML::Shutdown(); }

@@ -114,6 +114,7 @@ constexpr float SCALE_MAX_VALUE = 1000.F;
 
 void SceneCube::render_menu()
 {
+    ImGui::SetNextWindowSize({ 400, 300 }, ImGuiCond_Once);
     ImGui::Begin("Main Window");
     ImGui::SliderFloat("speed x", &angleSpeedX, MIN_VALUE, MAX_VALUE);
     ImGui::SliderFloat("speed y", &angleSpeedY, MIN_VALUE, MAX_VALUE);
