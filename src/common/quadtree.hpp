@@ -6,9 +6,15 @@
 #include "entities.hpp"
 #include "visitor.hpp"
 
+
+
+constexpr int DEFAULT_CAPACITY = 8;
+constexpr float QUADTREE_DIVISOR = 2.F;
+
+
 class Quadtree {
 public:
-    explicit Quadtree(const sf::FloatRect& bounds, int capacity = 4)
+    explicit Quadtree(const sf::FloatRect& bounds, int capacity = DEFAULT_CAPACITY)
         : bounds_(bounds), capacity_(capacity) {}
 
     bool insert(entity_t* entity) {
@@ -54,11 +60,9 @@ public:
         );
         return visit_ctx(get_bounds_visitor, ent);
     }
-
-private:
     void subdivide() {
-        float halfWidth = bounds_.size.x / 2.F;
-        float halfHeight = bounds_.size.y / 2.F;
+        float halfWidth = bounds_.size.x / QUADTREE_DIVISOR;
+        float halfHeight = bounds_.size.y / QUADTREE_DIVISOR;
         float x = bounds_.position.x;
         float y = bounds_.position.y;
 

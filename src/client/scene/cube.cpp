@@ -29,7 +29,7 @@ constexpr std::array<std::pair<int, int>, 12> cube_edge = { { { 0, 1 },
   { 3, 7 } } };
 
 
-void SceneCube::update(float deltaTime)
+void SceneCube::update(const float deltaTime)
 {
     angleX = std::fmod(angleX + (deltaTime * angleSpeedX), std::numbers::pi_v<float> * 2);
     if (angleX < START_ANGLE) { angleX += std::numbers::pi_v<float> * 2; }
@@ -114,7 +114,8 @@ constexpr float SCALE_MAX_VALUE = 1000.F;
 
 void SceneCube::render_menu()
 {
-    ImGui::SetNextWindowSize({ 400, 300 }, ImGuiCond_Once);
+    constexpr ImVec2 window_size = { 400, 300 };
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
     ImGui::Begin("Main Window");
     ImGui::SliderFloat("speed x", &angleSpeedX, MIN_VALUE, MAX_VALUE);
     ImGui::SliderFloat("speed y", &angleSpeedY, MIN_VALUE, MAX_VALUE);

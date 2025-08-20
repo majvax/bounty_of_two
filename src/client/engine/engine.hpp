@@ -5,7 +5,7 @@
 #include <vector>
 #include <memory>
 #include <spdlog/spdlog.h>
-#include <ImGui-SFML.h>
+#include <imgui-SFML.h>
 
 
 class SceneABC;

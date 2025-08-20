@@ -5,10 +5,10 @@
 Engine::Engine()
   : window(sf::VideoMode::getDesktopMode(), "bounty_of_two", sf::Style::Default, sf::State::Fullscreen, ctxSetting)
 {
-    constexpr auto anti_aliasing_level = 8;
-    constexpr auto target_framerate = 165;
+    constexpr auto anti_aliasing_level = 16; // kind of overkill, but it looks good (didn't see the difference tbh)
+    constexpr auto target_framerate = 0; // 0 means no limit
 
-    window.setVerticalSyncEnabled(true);
+    window.setVerticalSyncEnabled(false);
     window.setFramerateLimit(target_framerate);
     if (!ImGui::SFML::Init(window)) { spdlog::error("Failed to initialize ImGui-SFML"); }
     ImGui::GetIO().IniFilename = nullptr;

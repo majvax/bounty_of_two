@@ -3,8 +3,7 @@
 #include "scene/cube.hpp"
 
 int main()
-{
-            
+{  
     Engine engine;
 
     engine.pushScene(std::make_unique<TitleScene>(engine));
