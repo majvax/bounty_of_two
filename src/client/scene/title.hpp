@@ -6,7 +6,7 @@
 class TitleScene: public SceneABC
 {
 private:
-    sf::Text titleText; // uses Config::default_font()
+    sf::Text titleText;
 
 public:
     explicit TitleScene(Engine& engine);

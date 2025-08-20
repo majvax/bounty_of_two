@@ -47,13 +47,12 @@ public:
         }
     }
 
-    // Helper to get bounds from entity_t (using a visitor)
+    // Helper to get bounds from entity_t
     static sf::FloatRect getEntityBounds(const entity_t& ent)  {
-        // Define this visitor once globally or in your code
-        static constexpr auto get_bounds_visitor = Visitor{
-            [](const auto& ent) -> sf::FloatRect { return ent.get_bounds(); }  // Handles all types via base
-        };
-        return std::visit(get_bounds_visitor, ent);
+        static constexpr auto get_bounds_visitor = make_visitor(
+            [](const auto& ent) -> sf::FloatRect { return ent.get_bounds(); }
+        );
+        return visit_ctx(get_bounds_visitor, ent);
     }
 
 private:

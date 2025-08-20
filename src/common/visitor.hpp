@@ -4,8 +4,10 @@
 #include <variant>
 
 
+
+namespace details::visitor {
 template<class... Callables>
-struct Visitor : Callables...
+struct Overload : Callables...
 {
     using Callables::operator()...;
 };
@@ -27,11 +29,13 @@ struct check_helper {
     }  
 };
 
+}
+
 
 template <typename Variant, typename... Extra, typename... Callables>  
 constexpr auto make_unique_visitor(Callables&&... callables) {  
-    check_helper<Variant, Extra...>::template check<Callables...>();
-    return Visitor<std::decay_t<Callables>...>{std::forward<Callables>(callables)...};  
+    details::visitor::check_helper<Variant, Extra...>::template check<Callables...>();
+    return details::visitor::Overload<std::decay_t<Callables>...>{std::forward<Callables>(callables)...};  
 }
 
 
@@ -42,4 +46,10 @@ constexpr decltype(auto) visit_ctx(Visitor&& visitor, Variant&& var, Extra&&... 
             return std::forward<Visitor>(visitor)(std::forward<decltype(alt)>(alt), extra...);  
         },  
         std::forward<Variant>(var));  
+}
+
+
+template <typename... Callables>  
+constexpr auto make_visitor(Callables&&... callables) {
+    return details::visitor::Overload<std::decay_t<Callables>...>{std::forward<Callables>(callables)...};
 }

@@ -48,7 +48,7 @@ struct base_t
     uint16_t damage{ 0 };
     uint16_t ammo{ 0 };
     uint8_t z_index{ 0 };
-    uint8_t flags{ 0 };
+    enum_t flags{ 0 };
 
     [[nodiscard]] sf::FloatRect get_bounds() const
     {
@@ -69,7 +69,7 @@ struct base_t
         flags &= inverted;
     }
 
-    [[nodiscard]] bool has_flags(EntityFlags check_flags) const
+    [[nodiscard]] bool has_flag(EntityFlags check_flags) const
     {
         const auto mask = static_cast<enum_t>(check_flags);
         return (flags & mask) == mask;
