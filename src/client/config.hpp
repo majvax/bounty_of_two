@@ -5,6 +5,8 @@
 #include <functional>
 #include <string>
 
+
+// TODO: add linux support
 constexpr const char* default_font_path() { return "C:/Windows/Fonts/segoeui.ttf"; }
 
 

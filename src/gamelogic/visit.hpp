@@ -1,16 +1,21 @@
-#include "visitor.hpp"
 #include "entities.hpp"
+#include "visitor.hpp"
 
+
+
+
+constexpr int WINDOW_HEIGHT = 1080;
+constexpr int WINDOW_WIDTH = 1920;
 
 constexpr void reset(auto& ent)
 {
-    if (ent.position.x < 0 || ent.position.y < 0 || ent.position.x > 1920 || ent.position.y > 1080) {
+    if (ent.position.x < 0 || ent.position.y < 0 || ent.position.x > WINDOW_WIDTH || ent.position.y > WINDOW_HEIGHT) {
         // Reset position if out of bounds
         // make them bounce off the walls
-        if (ent.position.x < 0) ent.position.x = 0;
-        if (ent.position.y < 0) ent.position.y = 0;
-        if (ent.position.x > 1920) ent.position.x = 1920;
-        if (ent.position.y > 1080) ent.position.y = 1080;
+        if (ent.position.x < 0) { ent.position.x = 0; }
+        if (ent.position.y < 0) { ent.position.y = 0; }
+        if (ent.position.x > WINDOW_WIDTH) { ent.position.x = WINDOW_WIDTH; }
+        if (ent.position.y > WINDOW_HEIGHT) { ent.position.y = WINDOW_HEIGHT; }
         ent.velocity.x = -ent.velocity.x;
         ent.velocity.y = -ent.velocity.y;
     }

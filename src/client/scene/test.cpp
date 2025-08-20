@@ -1,4 +1,5 @@
 #include "test.hpp"
+#include "imgui.h"
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
 #include "visitor.hpp"
@@ -73,4 +74,16 @@ void TestScene::handleEvent(const sf::Event& event)
             engine.pushScene(std::make_unique<SceneCube>(engine));
         }
     }
+}
+
+
+void TestScene::render_menu()
+{
+    ImGui::SetNextWindowSize({ 100, 100 }, ImGuiCond_Once);
+    ImGui::Begin("Main Window");
+
+    std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
+    ImGui::TextUnformatted(fps_text.c_str());
+
+    ImGui::End();
 }
