@@ -7,8 +7,8 @@ int main()
             
     Engine engine;
 
-    engine.pushScene<TitleScene>();
-    engine.pushScene<SceneCube>();
+    engine.pushScene(std::make_unique<TitleScene>(engine));
+    engine.pushScene(std::make_unique<SceneCube>(engine));
 
     engine.run();
 }

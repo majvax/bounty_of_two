@@ -3,6 +3,7 @@ add_executable(client
     engine/engine.cpp
     scene/cube.cpp
     scene/title.cpp
+    scene/test.cpp
 
     )
 
@@ -14,6 +15,8 @@ target_link_libraries(client PRIVATE
     spdlog::spdlog
     ImGui-SFML::ImGui-SFML
     imgui
+    common
+    gamelogic
 )
 
 target_include_directories(client PRIVATE
