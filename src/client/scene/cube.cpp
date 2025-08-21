@@ -138,8 +138,13 @@ void SceneCube::handleEvent(const sf::Event& event)
     {
         if (key->scancode == sf::Keyboard::Scan::Enter) {
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
-            engine.clearScenes();
-            engine.pushScene(std::make_unique<TestScene>(engine));
+
+            engine.add_deferred_task(
+                [&engine= this->engine] {
+                    engine.clearScenes();
+                    engine.pushScene(std::make_unique<TestScene>(engine));
+                }
+            );
         }
     }
 }
