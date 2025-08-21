@@ -5,6 +5,7 @@
 #include <functional>
 #include <string>
 #include "resources/font.hpp"
+#include <spdlog/spdlog.h>
  
 
 struct Config
@@ -31,6 +32,7 @@ struct Config
     static FontResult default_font()
     {
         if (is_font_loaded) { return FontResult{ std::ref(default_font_) }; }
+        spdlog::info("Loading default font");
         if (!default_font_.openFromMemory(nunito.data(), nunito.size())) {
             return std::unexpected(std::string("Failed to load default font from: "));
         }

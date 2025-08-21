@@ -6,6 +6,8 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 #include <imgui-SFML.h>
+#include <queue>
+#include <functional>
 
 
 class SceneABC;
@@ -14,7 +16,7 @@ class SceneABC;
 constexpr sf::ContextSettings ctxSetting{
     .depthBits = 24,
     .stencilBits = 8,
-    .antiAliasingLevel = 8
+    .antiAliasingLevel = 16
 };
 
 
@@ -22,6 +24,7 @@ constexpr sf::ContextSettings ctxSetting{
 class Engine {
     std::vector<std::unique_ptr<SceneABC>> scenes_;
     sf::RenderWindow window;
+    std::queue<std::function<void()>> deferred_tasks;
 
 public:
     Engine();
@@ -40,6 +43,13 @@ public:
     void render_menu();
     void handleEvent(const sf::Event& event);
     void run();
+    void process_deferred_task();
+    void add_deferred_task(std::function<void()> task) {
+        deferred_tasks.push(std::move(task));
+    }
+
+    [[nodiscard]] const std::vector<std::unique_ptr<SceneABC>>& getScenes() const { return scenes_; }
+    [[nodiscard]] std::vector<std::unique_ptr<SceneABC>>& getScenes() { return scenes_; }
 
     [[nodiscard]] const sf::RenderWindow& getWindow() const { return window; }
     [[nodiscard]] sf::RenderWindow& getWindow() { return window; }

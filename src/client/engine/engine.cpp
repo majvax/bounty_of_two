@@ -5,7 +5,6 @@
 Engine::Engine()
   : window(sf::VideoMode::getDesktopMode(), "bounty_of_two", sf::Style::Default, sf::State::Fullscreen, ctxSetting)
 {
-    constexpr auto anti_aliasing_level = 16; // kind of overkill, but it looks good (didn't see the difference tbh)
     constexpr auto target_framerate = 0; // 0 means no limit
 
     window.setVerticalSyncEnabled(false);
@@ -102,6 +101,8 @@ void Engine::run()
             handleEvent(*event);
         }
 
+        process_deferred_task();
+
         const auto time = clock.restart();
         ImGui::SFML::Update(window, time);
 
@@ -118,5 +119,15 @@ void Engine::run()
 
         ImGui::SFML::Render(window);
         window.display();
+    }
+}
+
+
+void Engine::process_deferred_task()
+{
+    while (!deferred_tasks.empty()) {
+        auto task = std::move(deferred_tasks.front());
+        deferred_tasks.pop();
+        task();
     }
 }
