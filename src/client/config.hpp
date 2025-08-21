@@ -4,11 +4,8 @@
 #include <expected>
 #include <functional>
 #include <string>
-
-
-// TODO: add linux support
-constexpr const char* default_font_path() { return "C:/Windows/Fonts/segoeui.ttf"; }
-
+#include "resources/font.hpp"
+ 
 
 struct Config
 {
@@ -34,8 +31,8 @@ struct Config
     static FontResult default_font()
     {
         if (is_font_loaded) { return FontResult{ std::ref(default_font_) }; }
-        if (!default_font_.openFromFile(default_font_path())) {
-            return std::unexpected(std::string("Failed to load default font from: ") + default_font_path());
+        if (!default_font_.openFromMemory(nunito.data(), nunito.size())) {
+            return std::unexpected(std::string("Failed to load default font from: "));
         }
         default_font_.setSmooth(true);
         is_font_loaded = true;
