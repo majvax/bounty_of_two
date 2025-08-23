@@ -9,7 +9,7 @@ private:
     sf::Text titleText;
 
 public:
-    explicit TitleScene(Engine& engine);
+    explicit TitleScene(Engine& engine, Client* client);
 
     void update(float deltaTime) override;
     void render(sf::RenderTarget& target) override { target.draw(titleText); }

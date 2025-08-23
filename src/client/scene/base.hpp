@@ -1,14 +1,17 @@
 #pragma once
-#include <SFML/Graphics.hpp>
 #include "engine/engine.hpp"
+#include "network/client.hpp"
+#include <SFML/Graphics.hpp>
+
 
 class SceneABC
 {
 protected:
     Engine& engine;
+    Client* client{ nullptr };
 
 public:
-    explicit SceneABC(Engine& engine): engine(engine) {};
+    explicit SceneABC(Engine& engine, Client* client) : engine(engine), client(client) {};
     SceneABC(const SceneABC&) = delete;
     SceneABC& operator=(const SceneABC&) = delete;
     SceneABC(SceneABC&&) = delete;
