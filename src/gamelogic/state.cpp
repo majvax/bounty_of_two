@@ -5,7 +5,7 @@
 #include "visit.hpp"
 
 
-void GameState::update(float deltaTime)
+void gamestate_t::update(float deltaTime)
 {
     for (auto& entity : entities) { visit_ctx(update_visitor, entity, deltaTime); }
 

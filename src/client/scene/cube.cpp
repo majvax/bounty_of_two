@@ -140,9 +140,9 @@ void SceneCube::handleEvent(const sf::Event& event)
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
 
             engine.add_deferred_task(
-                [&engine= this->engine] {
+                [&engine= this->engine, client= this->client]() {
                     engine.clearScenes();
-                    engine.pushScene(std::make_unique<TestScene>(engine));
+                    engine.pushScene(std::make_unique<TestScene>(engine, client));
                 }
             );
         }

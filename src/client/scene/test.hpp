@@ -7,10 +7,10 @@
 class TestScene : public SceneABC
 {
 private:
-    GameState state{};
+    gamestate_t state{};
 
 public:
-    explicit TestScene(Engine& engine) : SceneABC(engine) {};
+    explicit TestScene(Engine& engine, Client* client) : SceneABC(engine, client) {};
     TestScene(const TestScene&) = delete;
     TestScene& operator=(const TestScene&) = delete;
     TestScene(TestScene&&) = delete;
@@ -22,5 +22,5 @@ public:
     void render(sf::RenderTarget& target) override;
     void handleEvent(const sf::Event& event) override;
     void render_menu() override;
-    void init() override;
+    void init() override {};
 };
