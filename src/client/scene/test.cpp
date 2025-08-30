@@ -58,7 +58,8 @@ void TestScene::handleEvent(const sf::Event& event)
 
 void TestScene::render_menu()
 {
-    ImGui::SetNextWindowSize({ 100, 100 }, ImGuiCond_Once);
+    constexpr ImVec2 window_size = { 100, 100 };
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
     ImGui::Begin("Main Window");
 
     std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);

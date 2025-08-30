@@ -12,7 +12,6 @@ constexpr float DEFAULT_SCALE = 260.F;
 class SceneCube : public SceneABC
 {
 private:
-
     float angleX = START_ANGLE;
     float angleY = START_ANGLE;
     float angleSpeedX = DEFAULT_ANGLE_SPEED_X;

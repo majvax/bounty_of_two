@@ -26,9 +26,6 @@ class Engine {
     sf::RenderWindow window;
     std::queue<std::move_only_function<void()>> deferred_tasks;
 
-    bool in_render{ false };
-    bool in_update{ false };
-
 public:
     Engine();
     Engine(const Engine&) = delete;
@@ -47,7 +44,7 @@ public:
     void handleEvent(const sf::Event& event);
     void run();
     void process_deferred_task();
-    void add_deferred_task(std::move_only_function<void()> task) {
+    void defer(std::move_only_function<void()> task) {
         deferred_tasks.emplace(std::move(task));
     }
 

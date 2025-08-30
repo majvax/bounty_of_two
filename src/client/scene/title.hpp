@@ -3,7 +3,7 @@
 #include "base.hpp"
 
 
-class TitleScene: public SceneABC
+class TitleScene : public SceneABC
 {
 private:
     sf::Text titleText;
@@ -16,5 +16,4 @@ public:
     void handleEvent(const sf::Event& event) override {}
     void render_menu() override {}
     void init() override {}
-
 };

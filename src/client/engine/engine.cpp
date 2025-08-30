@@ -17,73 +17,57 @@ Engine::~Engine() { ImGui::SFML::Shutdown(); }
 
 void Engine::pushScene(std::unique_ptr<SceneABC> scene)
 {
-    if (!scene) {
-        spdlog::error("Attempted to push a null scene");
-        return;
-    }
-
-    if (in_render || in_update) {
-        spdlog::warn("Deferring pushScene() call until after current render/update cycle");
-        add_deferred_task([this, scene = std::move(scene)]() mutable { pushScene(std::move(scene)); });
-        return;
-    }
-
-    const auto& sce = *scene;
-    spdlog::info("Pushing scene: {}", typeid(scene).name());
-    scenes_.emplace_back(std::move(scene));
-    scenes_.back()->init();
+    defer([this, scene = std::move(scene)]() mutable {
+        if (!scene) {
+            spdlog::error("Attempted to push a null scene");
+            return;
+        }
+        const auto& sce = *scene;
+        spdlog::info("Pushing scene: {}", typeid(scene).name());
+        scenes_.emplace_back(std::move(scene));
+        scenes_.back()->init();
+    });
 }
 
 void Engine::popScene()
 {
-    if (scenes_.empty()) {
-        spdlog::warn("Attempted to pop a scene from an empty stack");
-        return;
-    }
+    defer([this]() {
+        if (scenes_.empty()) {
+            spdlog::warn("Attempted to pop a scene from an empty stack");
+            return;
+        }
 
-    if (in_render || in_update) {
-        spdlog::warn("Deferring popScene() call until after current render/update cycle");
-        add_deferred_task([this]() { popScene(); });
-        return;
-    }
-
-    const auto& scene = *scenes_.back();
-    spdlog::info("Popping scene: {}", typeid(scene).name());
-    scenes_.pop_back();
+        const auto& scene = *scenes_.back();
+        spdlog::info("Popping scene: {}", typeid(scene).name());
+        scenes_.pop_back();
+    });
 }
 
 void Engine::clearScenes()
 {
-    if (scenes_.empty()) {
-        spdlog::warn("Attempted to clear an empty scene stack");
-        return;
-    }
+    defer([this]() {
+        if (scenes_.empty()) {
+            spdlog::warn("Attempted to clear an empty scene stack");
+            return;
+        }
 
-    if (in_render || in_update) {
-        spdlog::warn("Deferring clearScenes() call until after current render/update cycle");
-        add_deferred_task([this]() { clearScenes(); });
-        return;
-    }
-
-    spdlog::info("Clearing all scenes");
-    scenes_.clear();
+        spdlog::info("Clearing all scenes");
+        scenes_.clear();
+    });
 }
+
 
 void Engine::update(float deltaTime)
 {
-    in_update = true;
     for (auto& scene : scenes_) { scene->update(deltaTime); }
-    in_update = false;
 }
 
 void Engine::render(sf::RenderTarget& target)
 {
-    in_render = true;
     for (auto [index, scenePtr] : scenes_ | std::views::enumerate) {
         spdlog::info("Rendering scene {}/{}: {}", index, scenes_.size(), typeid(scenePtr).name());
         scenePtr->render(target);
     }
-    in_render = false;
 }
 
 void Engine::render_menu()
@@ -111,6 +95,9 @@ void Engine::run()
     sf::Clock clock;
 
     while (window.isOpen()) {
+        process_deferred_task();
+
+
         while (const auto event = window.pollEvent()) {
             ImGui::SFML::ProcessEvent(window, *event);
 
@@ -127,7 +114,6 @@ void Engine::run()
             handleEvent(*event);
         }
 
-        process_deferred_task();
 
         const auto time = clock.restart();
         ImGui::SFML::Update(window, time);
