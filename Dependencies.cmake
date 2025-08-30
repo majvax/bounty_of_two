@@ -1,6 +1,7 @@
 include(cmake/CPM.cmake)
 
 
+cpmaddpackage("gh:facebook/zstd@1.5.7")
 
 cpmaddpackage("gh:fmtlib/fmt#11.2.0")
 

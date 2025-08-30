@@ -5,4 +5,4 @@ target_include_directories(common INTERFACE
 )
 
 # Propagate SFML headers required for entities.hpp (Vector2)
-target_link_libraries(common INTERFACE SFML::System SFML::Graphics SFML::Network spdlog::spdlog)
+target_link_libraries(common INTERFACE SFML::System SFML::Graphics SFML::Network spdlog::spdlog zstd)

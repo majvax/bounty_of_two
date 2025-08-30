@@ -14,7 +14,10 @@ each packet is optimized. It only sends entity around each player.
 #include "spdlog/spdlog.h"
 #include "visitor.hpp"
 #include <SFML/Network.hpp>
+#include <zstd.h>
 
+// tried 22, no visible difference
+constexpr int COMPRESSION_LEVEL = 1;
 
 namespace net {
 enum struct message_type : uint8_t {
@@ -96,17 +99,47 @@ struct packet_t : sf::Packet
 
     const void* onSend(std::size_t& size) override
     {
-        // TODO: add compression
-        size = getDataSize();
-        const auto* data = getData();
+        const auto bound = ZSTD_compressBound(getDataSize());
+        std::vector<std::byte> compressed_data(bound);
+
+
+        const auto csize = ZSTD_compress(compressed_data.data(), bound, getData(), getDataSize(), COMPRESSION_LEVEL);
+
+        if (ZSTD_isError(csize)) {
+            spdlog::error("ZSTD compression error: {}", ZSTD_getErrorName(csize));
+            size = getDataSize();
+            return getData();
+        }
+        
+        clear();
+        append(compressed_data.data(), csize);
+        size = csize;
+
         spdlog::trace("Sending packet of size: {}", size);
-        return data;
+        return getData();
     }
 
     void onReceive(const void* data, std::size_t size) override
     {
-        // TODO: add decompression
-        append(data, size);
+
+        const auto osize = ZSTD_getFrameContentSize(data, size);
+        if (osize == ZSTD_CONTENTSIZE_ERROR) {
+            spdlog::error("ZSTD decompression error: not compressed by zstd");
+            return;
+        }
+        if (osize == ZSTD_CONTENTSIZE_UNKNOWN) {
+            spdlog::error("ZSTD decompression error: original size unknown");
+            return;
+        }
+
+        std::vector<std::byte> decompressed_data(osize);
+        const auto dsize = ZSTD_decompress(decompressed_data.data(), osize, data, size);
+        if (ZSTD_isError(dsize) != 0U) {
+            spdlog::error("ZSTD decompression error: {}", ZSTD_getErrorName(dsize));
+            return;
+        }
+
+        append(decompressed_data.data(), osize);
     }
 
     template<message_type M = Msg>
@@ -124,4 +157,4 @@ struct packet_t : sf::Packet
     }
 };
 
-}// namespace net
+} // namespace net
