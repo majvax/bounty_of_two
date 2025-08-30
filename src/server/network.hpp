@@ -1,10 +1,6 @@
 #include "networking.hpp"
 #include <SFML/Network.hpp>
 #include <algorithm>
-#include <array>
-#include <cstddef>
-
-constexpr auto MAX_PACKET_SIZE = 1024;
 
 struct connection_t
 {
@@ -21,9 +17,6 @@ struct connection_t
 
 inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& connections)
 {
-    std::array<std::byte, MAX_PACKET_SIZE> buffer{};
-
-
     std::optional<sf::IpAddress> sender;
     uint16_t port{ 0 };
 
@@ -32,9 +25,7 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
 
     auto status = socket.receive(packet, sender, port);
 
-    if (status == sf::Socket::Status::NotReady) {
-        return;
-    }
+    if (status == sf::Socket::Status::NotReady) { return; }
 
     if (status != sf::Socket::Status::Done) {
         spdlog::error("Failed to receive data");

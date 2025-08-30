@@ -11,3 +11,4 @@ target_include_directories(gamelogic
 target_link_libraries(gamelogic
     common
 )
+target_set_warning(gamelogic ${WARNINGS_AS_ERRORS})

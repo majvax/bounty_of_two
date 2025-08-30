@@ -22,7 +22,6 @@ void Engine::pushScene(std::unique_ptr<SceneABC> scene)
             spdlog::error("Attempted to push a null scene");
             return;
         }
-        const auto& sce = *scene;
         spdlog::info("Pushing scene: {}", typeid(scene).name());
         scenes_.emplace_back(std::move(scene));
         scenes_.back()->init();
@@ -64,9 +63,7 @@ void Engine::update(float deltaTime)
 
 void Engine::render(sf::RenderTarget& target)
 {
-    for (const auto& scene : scenes_) {
-        scene->render(target);
-    }
+    for (const auto& scene : scenes_) { scene->render(target); }
 }
 
 void Engine::render_menu()

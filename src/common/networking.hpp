@@ -39,9 +39,9 @@ struct header_t
 
     friend sf::Packet& operator>>(sf::Packet& packet, header_t& data)
     {
-        uint8_t type = 0;
-        packet >> type;
-        data.type = static_cast<message_type>(type);
+        uint8_t type_value = 0;
+        packet >> type_value;
+        data.type = static_cast<message_type>(type_value);
         return packet;
     }
 };
@@ -55,7 +55,7 @@ struct gamestate_packet_t
     {
         packet << data.entity_count;
         for (const auto& entity : data.entities) {
-            static constexpr auto visitor = make_visitor([](const auto& ent, sf::Packet& packet) { packet << ent; });
+            static constexpr auto visitor = make_visitor([](const auto& ent, sf::Packet& pac) { pac << ent; });
 
             visit_ctx(visitor, entity, packet);
         }
@@ -66,7 +66,7 @@ struct gamestate_packet_t
         packet >> data.entity_count;
         data.entities.resize(data.entity_count);
         for (auto& entity : data.entities) {
-            static constexpr auto visitor = make_visitor([](auto& ent, sf::Packet& packet) { packet >> ent; });
+            static constexpr auto visitor = make_visitor([](auto& ent, sf::Packet& pac) { pac >> ent; });
             visit_ctx(visitor, entity, packet);
         }
         return packet;

@@ -2,8 +2,6 @@
 #include "visitor.hpp"
 
 
-
-
 constexpr int WINDOW_HEIGHT = 1080;
 constexpr int WINDOW_WIDTH = 1920;
 

@@ -22,7 +22,7 @@ private:
 
 
 public:
-    explicit SceneCube(Engine& engine, Client* client) : SceneABC(engine, client) {};
+    explicit SceneCube(Engine& eng, Client* cli) : SceneABC(eng, cli) {};
     SceneCube(const SceneCube&) = delete;
     SceneCube& operator=(const SceneCube&) = delete;
     SceneCube(SceneCube&&) = delete;

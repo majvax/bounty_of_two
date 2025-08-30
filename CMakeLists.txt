@@ -1,4 +1,5 @@
 cmake_minimum_required(VERSION 3.30)
+include(cmake/warning.cmake)
 
 
 if (NOT DEFINED CMAKE_CXX_STANDARD)
@@ -6,7 +7,6 @@ if (NOT DEFINED CMAKE_CXX_STANDARD)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS OFF)
-
 
 project(
     bounty_of_two
@@ -26,6 +26,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin)
 set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
 
 include(Dependencies.cmake)
+
+
+option(WARNINGS_AS_ERRORS "Treat compiler warnings as errors" ON)
 
 # Add source tree
 add_subdirectory(src)

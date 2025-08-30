@@ -16,3 +16,5 @@ target_include_directories(client PRIVATE
     "${imgui_SOURCE_DIR}"
     "./"
 )
+
+target_set_warning(server ${WARNINGS_AS_ERRORS})

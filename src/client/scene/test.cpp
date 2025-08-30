@@ -29,7 +29,7 @@ void TestScene::render(sf::RenderTarget& target)
 
 void TestScene::update(float deltaTime)
 {
-    const auto result = client->receive([this, deltaTime](net::message_type type, auto& packet) {
+    const auto result = client->receive([this](net::message_type type, auto& packet) {
         switch (type) {
         case net::message_type::GameUpdate: {
             net::gamestate_packet_t state_packet;

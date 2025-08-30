@@ -1,16 +1,11 @@
 #pragma once
+#include "networking.hpp"
 #include <SFML/Network.hpp>
 #include <spdlog/spdlog.h>
-#include "networking.hpp"
 
 constexpr auto SERVER_PORT = 54000;
 
-enum struct receive_status: uint8_t
-{
-    WouldBlock,
-    UnknownSender,
-    Error
-};
+enum struct receive_status : uint8_t { WouldBlock, UnknownSender, Error };
 
 class Client
 {
@@ -20,10 +15,7 @@ class Client
 
 
 public:
-    Client()
-    {
-        socket.setBlocking(false);
-    }
+    Client() { socket.setBlocking(false); }
 
 
     bool connect()
@@ -48,7 +40,7 @@ public:
         spdlog::info("Client disconnected from server");
     }
 
-    template <net::message_type Msg>
+    template<net::message_type Msg>
     void send(const net::packet_t<Msg>& packet)
     {
         if (socket.send(packet, server_address, server_port) != sf::Socket::Status::Done) {
@@ -57,10 +49,11 @@ public:
     }
 
     /**
-     * @brief 
-     * 
+     * @brief
+     *
      * @param handler : function to handle received messages
-     * @return std::optional<receive_status> : status of the receive operation (WouldBlock, UnknownSender, Error) or std::nullopt on success
+     * @return std::optional<receive_status> : status of the receive operation (WouldBlock, UnknownSender, Error) or
+     * std::nullopt on success
      */
     auto receive(const std::function<void(net::message_type, sf::Packet&)>& handler) -> std::optional<receive_status>
     {
@@ -69,13 +62,9 @@ public:
         net::packet_t packet{};
 
         const auto status = socket.receive(packet, sender, port);
-        if (status == sf::Socket::Status::NotReady) {
-            return std::optional{ receive_status::WouldBlock };
-        }
+        if (status == sf::Socket::Status::NotReady) { return std::optional{ receive_status::WouldBlock }; }
 
-        if (status != sf::Socket::Status::Done) {
-            return std::optional{ receive_status::Error };
-        }
+        if (status != sf::Socket::Status::Done) { return std::optional{ receive_status::Error }; }
 
         spdlog::info("Received {} bytes from {}:{}", packet.getDataSize(), sender ? sender->toInteger() : 0, port);
         if (sender && *sender != server_address && port != server_port) {

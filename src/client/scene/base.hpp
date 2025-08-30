@@ -11,7 +11,7 @@ protected:
     Client* client{ nullptr };
 
 public:
-    explicit SceneABC(Engine& engine, Client* client) : engine(engine), client(client) {};
+    SceneABC(Engine& eng, Client* cli) : engine(eng), client(cli) {};
     SceneABC(const SceneABC&) = delete;
     SceneABC& operator=(const SceneABC&) = delete;
     SceneABC(SceneABC&&) = delete;

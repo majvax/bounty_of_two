@@ -38,7 +38,7 @@ int main()
 
     sf::Clock clock;
     gamestate_t state;
-    sf::Clock send_clock;// throttle sends
+    sf::Clock send_clock; // throttle sends
 
 
     constexpr int num_entities = 1000;

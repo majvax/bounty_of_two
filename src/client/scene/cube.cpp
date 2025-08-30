@@ -97,8 +97,8 @@ void SceneCube::update(const float deltaTime)
 
 
     for (auto [pt_a, pt_b] : cube_edge) {
-        auto vec_a = project(cube_vertices.at(pt_a));
-        auto vec_b = project(cube_vertices.at(pt_b));
+        auto vec_a = project(cube_vertices.at(static_cast<std::size_t>(pt_a)));
+        auto vec_b = project(cube_vertices.at(static_cast<std::size_t>(pt_b)));
         appendThickSegment(vec_a, vec_b, sf::Color::Black);
     }
 }

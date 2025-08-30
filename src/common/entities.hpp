@@ -1,9 +1,9 @@
 #pragma once
 #include "SFML/Graphics/Rect.hpp"
-#include "half.hpp"
 #include <SFML/Network/Packet.hpp>
 #include <SFML/System.hpp>
 #include <cstdint>
+#include <half.hpp>
 #include <variant>
 
 

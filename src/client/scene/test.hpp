@@ -10,7 +10,7 @@ private:
     gamestate_t state{};
 
 public:
-    explicit TestScene(Engine& engine, Client* client) : SceneABC(engine, client) {};
+    explicit TestScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {};
     TestScene(const TestScene&) = delete;
     TestScene& operator=(const TestScene&) = delete;
     TestScene(TestScene&&) = delete;
