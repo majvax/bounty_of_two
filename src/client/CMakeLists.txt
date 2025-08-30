@@ -16,6 +16,7 @@ target_link_libraries(client PRIVATE
     ImGui-SFML::ImGui-SFML
     imgui
     common
+    gamelogic
 )
 
 target_include_directories(client PRIVATE

@@ -5,6 +5,13 @@
 
 constexpr auto SERVER_PORT = 54000;
 
+enum struct receive_status: uint8_t
+{
+    WouldBlock,
+    UnknownSender,
+    Error
+};
+
 class Client
 {
     sf::UdpSocket socket;
@@ -49,30 +56,41 @@ public:
         }
     }
 
-    template <typename Func>
-    void receive(Func&& handler)
+    /**
+     * @brief 
+     * 
+     * @param handler : function to handle received messages
+     * @return std::optional<receive_status> : status of the receive operation (WouldBlock, UnknownSender, Error) or std::nullopt on success
+     */
+    auto receive(const std::function<void(net::message_type, sf::Packet&)>& handler) -> std::optional<receive_status>
     {
         std::optional<sf::IpAddress> sender;
         uint16_t port{ 0 };
         net::packet_t packet{};
-        if (socket.receive(packet, sender, port) != sf::Socket::Status::Done) {
-            return;
+
+        const auto status = socket.receive(packet, sender, port);
+        if (status == sf::Socket::Status::NotReady) {
+            return std::optional{ receive_status::WouldBlock };
+        }
+
+        if (status != sf::Socket::Status::Done) {
+            return std::optional{ receive_status::Error };
         }
 
         spdlog::info("Received {} bytes from {}:{}", packet.getDataSize(), sender ? sender->toInteger() : 0, port);
         if (sender && *sender != server_address && port != server_port) {
             spdlog::warn("Received packet from unknown sender {}:{}", sender ? sender->toInteger() : 0, port);
-            return;
+            return std::optional{ receive_status::UnknownSender };
         }
 
 
         net::header_t header;
         if (!(packet >> header)) {
             spdlog::error("Failed to extract header from packet");
-            return;
+            return std::optional{ receive_status::Error };
         }
         spdlog::info("Received packet of type {} from server", static_cast<uint8_t>(header.type));
-        std::forward<Func>(handler)(header.type, packet);
-
+        handler(header.type, packet);
+        return std::nullopt;
     }
 };

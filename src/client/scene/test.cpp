@@ -29,7 +29,7 @@ void TestScene::render(sf::RenderTarget& target)
 
 void TestScene::update(float deltaTime)
 {
-    client->receive([this, deltaTime](net::message_type type, auto& packet) {
+    const auto result = client->receive([this, deltaTime](net::message_type type, auto& packet) {
         switch (type) {
         case net::message_type::GameUpdate: {
             net::gamestate_packet_t state_packet;
@@ -42,6 +42,12 @@ void TestScene::update(float deltaTime)
             break;
         }
     });
+
+    if (result && *result == receive_status::WouldBlock) {
+        // No data received, just update the game state
+        // this will smoothly animate entities even when no updates are received
+        state.update(deltaTime);
+    }
 }
 
 void TestScene::handleEvent(const sf::Event& event)
