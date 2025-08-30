@@ -1,8 +1,8 @@
 #include "networking.hpp"
 #include <SFML/Network.hpp>
+#include <algorithm>
 #include <array>
 #include <cstddef>
-#include <algorithm>
 
 constexpr auto MAX_PACKET_SIZE = 1024;
 
@@ -11,7 +11,6 @@ struct connection_t
     sf::IpAddress address{ 0 };
     uint16_t port{ 0 };
     uint16_t id{ 0 };
-
 
     bool operator==(const connection_t& other) const
     {
@@ -30,7 +29,14 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
 
     net::packet_t packet{};
 
-    if (socket.receive(packet, sender, port) != sf::Socket::Status::Done) {
+
+    auto status = socket.receive(packet, sender, port);
+
+    if (status == sf::Socket::Status::NotReady) {
+        return;
+    }
+
+    if (status != sf::Socket::Status::Done) {
         spdlog::error("Failed to receive data");
         return;
     }
@@ -55,7 +61,7 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
         break;
     case net::message_type::JoinRequest: {
         spdlog::info("JoinRequest message received");
-        connection_t new_conn{ .address=*sender, .port=port, .id=static_cast<uint16_t>(connections.size() + 1) };
+        connection_t new_conn{ .address = *sender, .port = port, .id = static_cast<uint16_t>(connections.size() + 1) };
         if (std::ranges::find(connections, new_conn) == connections.end()) {
             connections.push_back(new_conn);
             spdlog::info("New connection added: {}:{}", new_conn.address.toInteger(), new_conn.port);
@@ -68,26 +74,26 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
         spdlog::warn("Unknown message type received: {}", static_cast<uint8_t>(header.type));
         break;
     }
+}
+
+
+inline void send(sf::UdpSocket& socket, gamestate_t& state, const connection_t& conn)
+{
+    net::packet_t<net::message_type::GameUpdate> packet{};
+
+    net::gamestate_packet_t gs_packet;
+    gs_packet.from_gamestate(state);
+
+    if (!(packet << gs_packet)) {
+        spdlog::error("Failed to insert gamestate into packet");
+        return;
     }
 
 
-    inline void send(sf::UdpSocket & socket, gamestate_t & state, const connection_t& conn)
-    {
-        net::packet_t<net::message_type::GameUpdate> packet{};
-
-        net::gamestate_packet_t gs_packet;
-        gs_packet.from_gamestate(state);
-
-        if (!(packet << gs_packet)) {
-            spdlog::error("Failed to insert gamestate into packet");
-            return;
-        }
-
-
-        if (socket.send(packet, conn.address, conn.port) != sf::Socket::Status::Done) {
-            spdlog::error("Failed to send packet");
-            return;
-        }
-
-        spdlog::info("Sent {} bytes to {}:{}", packet.getDataSize(), conn.address.toInteger(), conn.port);
+    if (socket.send(packet, conn.address, conn.port) != sf::Socket::Status::Done) {
+        spdlog::error("Failed to send packet");
+        return;
     }
+
+    spdlog::info("Sent {} bytes to {}:{}", packet.getDataSize(), conn.address.toInteger(), conn.port);
+}

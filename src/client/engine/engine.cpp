@@ -64,9 +64,8 @@ void Engine::update(float deltaTime)
 
 void Engine::render(sf::RenderTarget& target)
 {
-    for (auto [index, scenePtr] : scenes_ | std::views::enumerate) {
-        spdlog::info("Rendering scene {}/{}: {}", index, scenes_.size(), typeid(scenePtr).name());
-        scenePtr->render(target);
+    for (const auto& scene : scenes_) {
+        scene->render(target);
     }
 }
 
