@@ -24,7 +24,10 @@ constexpr sf::ContextSettings ctxSetting{
 class Engine {
     std::vector<std::unique_ptr<SceneABC>> scenes_;
     sf::RenderWindow window;
-    std::queue<std::function<void()>> deferred_tasks;
+    std::queue<std::move_only_function<void()>> deferred_tasks;
+
+    bool in_render{ false };
+    bool in_update{ false };
 
 public:
     Engine();
@@ -44,8 +47,8 @@ public:
     void handleEvent(const sf::Event& event);
     void run();
     void process_deferred_task();
-    void add_deferred_task(std::function<void()> task) {
-        deferred_tasks.push(std::move(task));
+    void add_deferred_task(std::move_only_function<void()> task) {
+        deferred_tasks.emplace(std::move(task));
     }
 
     [[nodiscard]] const std::vector<std::unique_ptr<SceneABC>>& getScenes() const { return scenes_; }

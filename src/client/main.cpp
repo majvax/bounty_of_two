@@ -6,6 +6,8 @@
 
 int main()
 {
+    spdlog::set_level(spdlog::level::info);
+
     Engine engine;
     Client client;
     if (!client.connect()) {

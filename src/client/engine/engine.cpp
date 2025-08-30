@@ -21,6 +21,13 @@ void Engine::pushScene(std::unique_ptr<SceneABC> scene)
         spdlog::error("Attempted to push a null scene");
         return;
     }
+
+    if (in_render || in_update) {
+        spdlog::warn("Deferring pushScene() call until after current render/update cycle");
+        add_deferred_task([this, scene = std::move(scene)]() mutable { pushScene(std::move(scene)); });
+        return;
+    }
+
     const auto& sce = *scene;
     spdlog::info("Pushing scene: {}", typeid(scene).name());
     scenes_.emplace_back(std::move(scene));
@@ -31,6 +38,12 @@ void Engine::popScene()
 {
     if (scenes_.empty()) {
         spdlog::warn("Attempted to pop a scene from an empty stack");
+        return;
+    }
+
+    if (in_render || in_update) {
+        spdlog::warn("Deferring popScene() call until after current render/update cycle");
+        add_deferred_task([this]() { popScene(); });
         return;
     }
 
@@ -46,18 +59,31 @@ void Engine::clearScenes()
         return;
     }
 
+    if (in_render || in_update) {
+        spdlog::warn("Deferring clearScenes() call until after current render/update cycle");
+        add_deferred_task([this]() { clearScenes(); });
+        return;
+    }
+
     spdlog::info("Clearing all scenes");
     scenes_.clear();
 }
 
 void Engine::update(float deltaTime)
 {
-    for (auto& scenePtr : scenes_) { scenePtr->update(deltaTime); }
+    in_update = true;
+    for (auto& scene : scenes_) { scene->update(deltaTime); }
+    in_update = false;
 }
 
 void Engine::render(sf::RenderTarget& target)
 {
-    for (auto& scenePtr : scenes_) { scenePtr->render(target); }
+    in_render = true;
+    for (auto [index, scenePtr] : scenes_ | std::views::enumerate) {
+        spdlog::info("Rendering scene {}/{}: {}", index, scenes_.size(), typeid(scenePtr).name());
+        scenePtr->render(target);
+    }
+    in_render = false;
 }
 
 void Engine::render_menu()

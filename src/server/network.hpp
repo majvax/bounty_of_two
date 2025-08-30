@@ -75,14 +75,6 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
     {
         net::packet_t<net::message_type::GameUpdate> packet{};
 
-        net::header_t header;
-        header.type = net::message_type::GameUpdate;
-
-        if (!(packet << header)) {
-            spdlog::error("Failed to insert header into packet");
-            return;
-        }
-
         net::gamestate_packet_t gs_packet;
         gs_packet.from_gamestate(state);
 
