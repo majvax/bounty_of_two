@@ -17,47 +17,53 @@ Engine::~Engine() { ImGui::SFML::Shutdown(); }
 
 void Engine::pushScene(std::unique_ptr<SceneABC> scene)
 {
-    if (!scene) {
-        spdlog::error("Attempted to push a null scene");
-        return;
-    }
-    const auto& sce = *scene;
-    spdlog::info("Pushing scene: {}", typeid(scene).name());
-    scenes_.emplace_back(std::move(scene));
-    scenes_.back()->init();
+    defer([this, scene = std::move(scene)]() mutable {
+        if (!scene) {
+            spdlog::error("Attempted to push a null scene");
+            return;
+        }
+        spdlog::info("Pushing scene: {}", typeid(scene).name());
+        scenes_.emplace_back(std::move(scene));
+        scenes_.back()->init();
+    });
 }
 
 void Engine::popScene()
 {
-    if (scenes_.empty()) {
-        spdlog::warn("Attempted to pop a scene from an empty stack");
-        return;
-    }
+    defer([this]() {
+        if (scenes_.empty()) {
+            spdlog::warn("Attempted to pop a scene from an empty stack");
+            return;
+        }
 
-    const auto& scene = *scenes_.back();
-    spdlog::info("Popping scene: {}", typeid(scene).name());
-    scenes_.pop_back();
+        const auto& scene = *scenes_.back();
+        spdlog::info("Popping scene: {}", typeid(scene).name());
+        scenes_.pop_back();
+    });
 }
 
 void Engine::clearScenes()
 {
-    if (scenes_.empty()) {
-        spdlog::warn("Attempted to clear an empty scene stack");
-        return;
-    }
+    defer([this]() {
+        if (scenes_.empty()) {
+            spdlog::warn("Attempted to clear an empty scene stack");
+            return;
+        }
 
-    spdlog::info("Clearing all scenes");
-    scenes_.clear();
+        spdlog::info("Clearing all scenes");
+        scenes_.clear();
+    });
 }
+
 
 void Engine::update(float deltaTime)
 {
-    for (auto& scenePtr : scenes_) { scenePtr->update(deltaTime); }
+    for (auto& scene : scenes_) { scene->update(deltaTime); }
 }
 
 void Engine::render(sf::RenderTarget& target)
 {
-    for (auto& scenePtr : scenes_) { scenePtr->render(target); }
+    for (const auto& scene : scenes_) { scene->render(target); }
 }
 
 void Engine::render_menu()
@@ -85,6 +91,9 @@ void Engine::run()
     sf::Clock clock;
 
     while (window.isOpen()) {
+        process_deferred_task();
+
+
         while (const auto event = window.pollEvent()) {
             ImGui::SFML::ProcessEvent(window, *event);
 
@@ -101,7 +110,6 @@ void Engine::run()
             handleEvent(*event);
         }
 
-        process_deferred_task();
 
         const auto time = clock.restart();
         ImGui::SFML::Update(window, time);

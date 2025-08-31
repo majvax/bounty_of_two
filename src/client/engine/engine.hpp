@@ -2,29 +2,25 @@
 #include "SFML/Graphics/RenderWindow.hpp"
 #include "SFML/Window/ContextSettings.hpp"
 #include <SFML/Window/Event.hpp>
-#include <vector>
-#include <memory>
-#include <spdlog/spdlog.h>
-#include <imgui-SFML.h>
-#include <queue>
 #include <functional>
+#include <imgui-SFML.h>
+#include <memory>
+#include <queue>
+#include <spdlog/spdlog.h>
+#include <vector>
 
 
 class SceneABC;
 
 
-constexpr sf::ContextSettings ctxSetting{
-    .depthBits = 24,
-    .stencilBits = 8,
-    .antiAliasingLevel = 16
-};
+constexpr sf::ContextSettings ctxSetting{ .depthBits = 24, .stencilBits = 8, .antiAliasingLevel = 16 };
 
 
-
-class Engine {
+class Engine
+{
     std::vector<std::unique_ptr<SceneABC>> scenes_;
     sf::RenderWindow window;
-    std::queue<std::function<void()>> deferred_tasks;
+    std::queue<std::move_only_function<void()>> deferred_tasks;
 
 public:
     Engine();
@@ -44,14 +40,11 @@ public:
     void handleEvent(const sf::Event& event);
     void run();
     void process_deferred_task();
-    void add_deferred_task(std::function<void()> task) {
-        deferred_tasks.push(std::move(task));
-    }
+    void defer(std::move_only_function<void()> task) { deferred_tasks.emplace(std::move(task)); }
 
     [[nodiscard]] const std::vector<std::unique_ptr<SceneABC>>& getScenes() const { return scenes_; }
     [[nodiscard]] std::vector<std::unique_ptr<SceneABC>>& getScenes() { return scenes_; }
 
     [[nodiscard]] const sf::RenderWindow& getWindow() const { return window; }
     [[nodiscard]] sf::RenderWindow& getWindow() { return window; }
-
 };

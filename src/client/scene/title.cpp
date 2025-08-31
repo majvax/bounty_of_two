@@ -5,7 +5,8 @@
 constexpr auto font_size = 42;
 
 
-TitleScene::TitleScene(Engine& engine) : SceneABC(engine), titleText(Config::default_font().value(), "bounty of two", font_size)
+TitleScene::TitleScene(Engine& eng, Client* cli)
+  : SceneABC(eng, cli), titleText(Config::default_font().value(), "bounty of two", font_size)
 {
     constexpr float outline_thickness = 2.F;
     titleText.setFillColor(sf::Color::Black);

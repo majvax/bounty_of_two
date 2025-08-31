@@ -1,11 +1,11 @@
 #include "cube.hpp"
+#include "scene/test.hpp"
 #include <array>
 #include <cmath>
 #include <imgui.h>
+#include <memory>
 #include <numbers>
 #include <spdlog/spdlog.h>
-#include "scene/test.hpp"
-#include <memory>
 
 constexpr std::array<sf::Vector3f, 8> cube_vertices = { { { -1, -1, -1 },
   { 1, -1, -1 },
@@ -97,8 +97,8 @@ void SceneCube::update(const float deltaTime)
 
 
     for (auto [pt_a, pt_b] : cube_edge) {
-        auto vec_a = project(cube_vertices.at(pt_a));
-        auto vec_b = project(cube_vertices.at(pt_b));
+        auto vec_a = project(cube_vertices.at(static_cast<std::size_t>(pt_a)));
+        auto vec_b = project(cube_vertices.at(static_cast<std::size_t>(pt_b)));
         appendThickSegment(vec_a, vec_b, sf::Color::Black);
     }
 }
@@ -121,8 +121,8 @@ void SceneCube::render_menu()
     ImGui::SliderFloat("speed y", &angleSpeedY, MIN_VALUE, MAX_VALUE);
     ImGui::SliderFloat("distance", &distance, MIN_VALUE, MAX_VALUE);
     ImGui::SliderFloat("scale", &scale, MIN_VALUE, SCALE_MAX_VALUE);
-    ImGui::SliderFloat("Current angle X", &angleX, MIN_VALUE, std::numbers::pi_v<float> * 2);// 2*PI
-    ImGui::SliderFloat("Current angle Y", &angleY, MIN_VALUE, std::numbers::pi_v<float> * 2);// 2*PI
+    ImGui::SliderFloat("Current angle X", &angleX, MIN_VALUE, std::numbers::pi_v<float> * 2); // 2*PI
+    ImGui::SliderFloat("Current angle Y", &angleY, MIN_VALUE, std::numbers::pi_v<float> * 2); // 2*PI
 
     std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
     ImGui::TextUnformatted(fps_text.c_str());
@@ -131,20 +131,14 @@ void SceneCube::render_menu()
 }
 
 
-
 void SceneCube::handleEvent(const sf::Event& event)
 {
-    if (const auto* key = event.getIf<sf::Event::KeyPressed>())
-    {
+    if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
         if (key->scancode == sf::Keyboard::Scan::Enter) {
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
 
-            engine.add_deferred_task(
-                [&engine= this->engine] {
-                    engine.clearScenes();
-                    engine.pushScene(std::make_unique<TestScene>(engine));
-                }
-            );
+            engine.clearScenes();
+            engine.pushScene(std::make_unique<TestScene>(engine, client));
         }
     }
 }

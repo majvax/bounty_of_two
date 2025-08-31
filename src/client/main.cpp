@@ -1,13 +1,22 @@
 #include "engine/engine.hpp"
-#include "scene/title.hpp"
+#include "network/client.hpp"
 #include "scene/cube.hpp"
+#include "scene/title.hpp"
+
 
 int main()
-{  
-    Engine engine;
+{
+    spdlog::set_level(spdlog::level::info);
 
-    engine.pushScene(std::make_unique<TitleScene>(engine));
-    engine.pushScene(std::make_unique<SceneCube>(engine));
+    Engine engine;
+    Client client;
+    if (!client.connect()) {
+        spdlog::critical("Failed to connect to server, exiting");
+        return -1;
+    }
+
+    engine.pushScene(std::make_unique<TitleScene>(engine, &client));
+    engine.pushScene(std::make_unique<SceneCube>(engine, &client));
 
     engine.run();
 }

@@ -12,7 +12,6 @@ constexpr float DEFAULT_SCALE = 260.F;
 class SceneCube : public SceneABC
 {
 private:
-
     float angleX = START_ANGLE;
     float angleY = START_ANGLE;
     float angleSpeedX = DEFAULT_ANGLE_SPEED_X;
@@ -23,7 +22,7 @@ private:
 
 
 public:
-    explicit SceneCube(Engine& engine) : SceneABC(engine) {};
+    explicit SceneCube(Engine& eng, Client* cli) : SceneABC(eng, cli) {};
     SceneCube(const SceneCube&) = delete;
     SceneCube& operator=(const SceneCube&) = delete;
     SceneCube(SceneCube&&) = delete;

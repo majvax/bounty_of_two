@@ -3,8 +3,6 @@
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
 #include "visitor.hpp"
-#include <random>
-#include <ranges>
 #include <spdlog/spdlog.h>
 
 
@@ -29,40 +27,28 @@ void TestScene::render(sf::RenderTarget& target)
     for (const auto& entity : state.entities) { visit_ctx(render_visitor, entity, target); }
 }
 
-constexpr auto init_visitor = make_visitor([](auto& ent) {
-    static std::mt19937 rng(std::random_device{}());
-    static std::uniform_real_distribution<float> x_dist(0.F, 1920.F);
-    static std::uniform_real_distribution<float> y_dist(0.F, 1080.F);
-    static std::uniform_real_distribution<float> vel_dist(-50.F, 50.F);
-
-    ent.position = { x_dist(rng), y_dist(rng) };
-    ent.size = { 20.F, 20.F };
-    ent.health = 100;
-    ent.damage = 10;
-    ent.velocity = { vel_dist(rng), vel_dist(rng) };
-});
-
-void TestScene::init()
+void TestScene::update(float deltaTime)
 {
-    // FIXME: Initialize entities for testing, should happen on server side
-    // This is just a placeholder to demonstrate the structure
-    constexpr int num_entities = 1500;
-    state.entities.reserve(num_entities);
-    for (auto index : std::views::iota(0, num_entities)) {
-        if (index % 3 == 0) {
-            state.entities.emplace_back(berserker_t{});
-        } else if (index % 3 == 1) {
-            state.entities.emplace_back(sniper_t{});
-        } else {
-            state.entities.emplace_back(player_t{});
+    const auto result = client->receive([this](net::message_type type, auto& packet) {
+        switch (type) {
+        case net::message_type::GameUpdate: {
+            net::gamestate_packet_t state_packet;
+            packet >> state_packet;
+            state = state_packet.to_gamestate();
+            break;
         }
+        default:
+            spdlog::warn("Unknown message type received in TestScene: {}", static_cast<uint8_t>(type));
+            break;
+        }
+    });
+
+    if (result && *result == receive_status::WouldBlock) {
+        // No data received, just update the game state
+        // this will smoothly animate entities even when no updates are received
+        state.update(deltaTime);
     }
-
-    for (auto& entity : state.entities) { std::visit(init_visitor, entity); }
 }
-
-void TestScene::update(float deltaTime) { state.update(deltaTime); }
-
 
 void TestScene::handleEvent(const sf::Event& event)
 {
@@ -70,16 +56,16 @@ void TestScene::handleEvent(const sf::Event& event)
         if (key->scancode == sf::Keyboard::Scan::Enter) {
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
             engine.clearScenes();
-            engine.pushScene(std::make_unique<TitleScene>(engine));
-            engine.pushScene(std::make_unique<SceneCube>(engine));
+            engine.pushScene(std::make_unique<TitleScene>(engine, client));
+            engine.pushScene(std::make_unique<SceneCube>(engine, client));
         }
     }
 }
 
-
 void TestScene::render_menu()
 {
-    ImGui::SetNextWindowSize({ 100, 100 }, ImGuiCond_Once);
+    constexpr ImVec2 window_size = { 100, 100 };
+    ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
     ImGui::Begin("Main Window");
 
     std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
