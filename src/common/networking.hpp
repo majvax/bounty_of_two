@@ -22,7 +22,13 @@ constexpr int COMPRESSION_LEVEL = 1;
 namespace net {
 enum struct message_type : uint8_t {
     None,
-    JoinRequest,
+
+    // tcp messages
+    JoinNotification,
+    LeaveNotification,
+    ChatMessage,
+
+    // udp messages
     GameUpdate,
     PlayerInput,
 };
@@ -72,7 +78,7 @@ struct gamestate_packet_t
         return packet;
     }
 
-    void from_gamestate(gamestate_t& state)
+    void from_gamestate(const gamestate_t& state)
     {
         entities = state.entities;
         entity_count = static_cast<uint32_t>(entities.size());
@@ -83,6 +89,36 @@ struct gamestate_packet_t
         gamestate_t state;
         state.entities = entities;
         return state;
+    }
+};
+
+struct chat_packet_t
+{
+    uint16_t sender_id{ 0 };
+    std::string message;
+
+    friend sf::Packet& operator<<(sf::Packet& packet, const chat_packet_t& data)
+    {
+        return packet << data.sender_id << data.message;
+    }
+    friend sf::Packet& operator>>(sf::Packet& packet, chat_packet_t& data)
+    {
+        return packet >> data.sender_id >> data.message;
+    }
+};
+
+struct join_packet_t
+{
+    uint16_t udp_port{ 0 };
+    std::string player_name;
+
+    friend sf::Packet& operator<<(sf::Packet& packet, const join_packet_t& data)
+    {
+        return packet << data.udp_port << data.player_name;
+    }
+    friend sf::Packet& operator>>(sf::Packet& packet, join_packet_t& data)
+    {
+        return packet >> data.udp_port >> data.player_name;
     }
 };
 

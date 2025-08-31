@@ -1,6 +1,8 @@
-add_executable(server 
+add_executable(server
     main.cpp
-    )
+    networking/server.cpp
+    networking/callback.cpp
+)
 
 target_link_libraries(server PRIVATE
     SFML::Graphics
