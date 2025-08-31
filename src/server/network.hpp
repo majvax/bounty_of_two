@@ -17,6 +17,7 @@ struct connection_t
 
 inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& connections)
 {
+    static uint16_t counter{ 0 };
     std::optional<sf::IpAddress> sender;
     uint16_t port{ 0 };
 
@@ -52,7 +53,7 @@ inline void recv_and_process(sf::UdpSocket& socket, std::vector<connection_t>& c
         break;
     case net::message_type::JoinRequest: {
         spdlog::info("JoinRequest message received");
-        connection_t new_conn{ .address = *sender, .port = port, .id = static_cast<uint16_t>(connections.size() + 1) };
+        connection_t new_conn{ .address = *sender, .port = port, .id = counter++ };
         if (std::ranges::find(connections, new_conn) == connections.end()) {
             connections.push_back(new_conn);
             spdlog::info("New connection added: {}:{}", new_conn.address.toInteger(), new_conn.port);

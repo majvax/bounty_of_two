@@ -30,7 +30,7 @@ enum struct message_type : uint8_t {
 
 struct header_t
 {
-    // lenght is already included in sf::Packet header
+    // length is already included in sf::Packet header
     message_type type{ 0 };
     friend sf::Packet& operator<<(sf::Packet& packet, const header_t& data)
     {

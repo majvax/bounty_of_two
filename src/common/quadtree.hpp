@@ -7,14 +7,14 @@
 #include <vector>
 
 
-constexpr int DEFAULT_CAPACITY = 8;
+constexpr std::size_t DEFAULT_CAPACITY = 8;
 constexpr float QUADTREE_DIVISOR = 2.F;
 
 
 class Quadtree
 {
 public:
-    explicit Quadtree(const sf::FloatRect& bounds, int capacity = DEFAULT_CAPACITY)
+    explicit Quadtree(const sf::FloatRect& bounds, std::size_t capacity = DEFAULT_CAPACITY)
       : bounds_(bounds), capacity_(capacity)
     {}
 
@@ -22,7 +22,7 @@ public:
     {
         if (bounds_.findIntersection(getEntityBounds(*entity)) == std::nullopt) { return false; }
 
-        if (children_.empty() && objects_.size() < static_cast<std::size_t>(capacity_)) {
+        if (children_.empty() && objects_.size() < capacity_) {
             objects_.push_back(entity);
             return true;
         }
@@ -82,7 +82,7 @@ public:
 
 
     sf::FloatRect bounds_;
-    int capacity_;
+    std::size_t capacity_;
     std::vector<entity_t*> objects_;
     std::vector<std::unique_ptr<Quadtree>> children_;
 };

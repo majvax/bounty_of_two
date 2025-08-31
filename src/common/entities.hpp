@@ -38,7 +38,6 @@ inline sf::Packet& operator<<(sf::Packet& packet, const sf::Vector2<float16_t>& 
 inline sf::Packet& operator>>(sf::Packet& packet, sf::Vector2<float16_t>& vec)
 {
     return packet >> vec.x >> vec.y;
-    ;
 }
 
 
