@@ -61,7 +61,7 @@ void Server::setup_callbacks()
 
         for (auto& connection : m_connections) {
             // filter invalid connection and sender
-            if (connection == conn || !conn) { continue; }
+            if (connection == conn || !connection) { continue; }
             if (connection.socket.send(out_packet) != sf::Socket::Status::Done) {
                 spdlog::error(
                   "Failed to send chat message to {}:{}", connection.get_address().toInteger(), connection.get_port());
