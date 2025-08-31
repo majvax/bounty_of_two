@@ -8,8 +8,12 @@ std::optional<std::string> Server::init()
 {
     m_data_socket.setBlocking(false);
 
-    // prepare for the first connection
+    // the m_connections vector always has one empty connection ready to be filled
+    // by `m_listener.accept()`. To avoid unnecessary branching, in the `accept_new_connections`
+    // method, we always add a new empty connection after accepting a new one. We need to initialize
+    // the socket of the empty connection to non-blocking mode here.
     m_connections.emplace_back().socket.setBlocking(false);
+
     if (m_listener.listen(TCP_PORT) != sf::Socket::Status::Done) {
         spdlog::critical("Failed to bind listener to port {}", TCP_PORT);
         return std::optional{ "Failed to bind listener" };
@@ -35,7 +39,6 @@ void Server::accept_new_connections()
         spdlog::info("New connection accepted from {}:{}", conn.get_address().toString(), conn.get_port());
         m_selector.add(conn.socket);
 
-        // Prepare for the next connection
         m_connections.emplace_back().socket.setBlocking(false);
     } else {
         spdlog::error("Failed to accept new connection");
@@ -129,7 +132,7 @@ void Server::process_udp_message()
     }
 
     auto conn_it = std::ranges::find_if(
-      m_connections, [&](const auto& conn) { return conn.get_address() == *sender && conn.get_port() == port; });
+      m_connections, [&](const auto& conn) { return conn.get_address() == *sender && conn.udp_port == port; });
     if (conn_it == m_connections.end() || !*conn_it) {
         spdlog::warn("Received packet from unknown sender {}:{}", sender->toInteger(), port);
         return;
