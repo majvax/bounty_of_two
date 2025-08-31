@@ -1,4 +1,4 @@
-#include "network.hpp"
+#include "networking/server.hpp"
 #include "visitor.hpp"
 #include <random>
 #include <ranges>
@@ -23,15 +23,10 @@ constexpr auto init_visitor = make_visitor([](auto& ent) {
 int main()
 {
     spdlog::set_level(spdlog::level::info);
-    std::vector<connection_t> connections;
 
-
-    sf::UdpSocket socket;
-    socket.setBlocking(false);
-
-
-    if (socket.bind(SERVER_PORT) != sf::Socket::Status::Done) {
-        spdlog::error("Failed to bind socket on port 54000");
+    Server server;
+    if (auto err = server.init()) {
+        spdlog::critical("Server initialization failed: {}", *err);
         return -1;
     }
     spdlog::info("Server started, waiting for data...");
@@ -40,8 +35,7 @@ int main()
     gamestate_t state;
     sf::Clock send_clock; // throttle sends
 
-
-    constexpr int num_entities = 1000;
+    constexpr int num_entities = 1;
     state.entities.reserve(num_entities);
     for (auto index : std::views::iota(0, num_entities)) {
         if (index % 3 == 0) {
@@ -56,12 +50,12 @@ int main()
     for (auto& entity : state.entities) { std::visit(init_visitor, entity); }
 
     while (true) {
-        const auto delta_time = clock.restart().asSeconds();
-        recv_and_process(socket, connections);
-        state.update(delta_time);
+        server.recv();
+        
+        state.update(clock.restart().asSeconds());
 
         if (send_clock.getElapsedTime().asMilliseconds() >= SEND_INTERVAL_MS) {
-            for (const auto& conn : connections) { send(socket, state, conn); }
+            server.send(state);
             send_clock.restart();
         }
     }

@@ -3,48 +3,82 @@
 #include <SFML/Network.hpp>
 #include <spdlog/spdlog.h>
 
-constexpr auto SERVER_PORT = 54000;
+constexpr auto TCP_SERVER_PORT = 54000;
+constexpr auto UDP_SERVER_PORT = 54001;
+
+constexpr auto UDP_SELF_PORT = 10000;
+
 
 enum struct receive_status : uint8_t { WouldBlock, UnknownSender, Error };
 
 class Client
 {
-    sf::UdpSocket socket;
+    sf::TcpSocket tcp_socket;
+    sf::UdpSocket udp_socket;
     sf::IpAddress server_address = sf::IpAddress::LocalHost;
-    uint16_t server_port{ SERVER_PORT };
 
 
 public:
-    Client() { socket.setBlocking(false); }
+    Client()
+    {
+        udp_socket.setBlocking(false);
+    }
+    ~Client() { disconnect(); }
+    Client(const Client&) = delete;
+    Client& operator=(const Client&) = delete;
+    Client(Client&&) = delete;
+    Client& operator=(Client&&) = delete;
 
 
     bool connect()
     {
-        constexpr auto SELF_PORT = 10000;
-        spdlog::info("Client connecting to server at {}:{}", server_address.toInteger(), server_port);
-        if (socket.bind(SELF_PORT) != sf::Socket::Status::Done) {
-            spdlog::critical("Failed to bind socket to port {}", SELF_PORT);
+
+        auto status = tcp_socket.connect(server_address, TCP_SERVER_PORT);
+        if (status != sf::Socket::Status::Done)
+        {
+            spdlog::critical("Failed to connect to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
             return false;
         }
-        net::packet_t<net::message_type::JoinRequest> packet;
-        if (socket.send(packet, server_address, server_port) != sf::Socket::Status::Done) {
-            spdlog::error("Failed to send JoinRequest to server at {}:{}", server_address.toInteger(), server_port);
+        tcp_socket.setBlocking(false);
+
+
+        status = udp_socket.bind(UDP_SELF_PORT);
+        if (status != sf::Socket::Status::Done)
+        {
+            spdlog::critical("Failed to bind UDP socket to port {}", UDP_SELF_PORT);
             return false;
         }
-        spdlog::info("JoinRequest sent to server at {}:{}", server_address.toInteger(), server_port);
+
+        spdlog::info("Connected to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+
+        net::packet_t<net::message_type::JoinNotification> packet{};
+        packet << net::join_packet_t{.udp_port = UDP_SELF_PORT, .player_name = "Player" };
+        status = tcp_socket.send(packet);
+        if (status != sf::Socket::Status::Done)
+        {
+            spdlog::error("Failed to send JoinNotification to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+            return false;
+        }
+
+        spdlog::info("JoinRequest sent to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
         return true;
     }
     void disconnect()
     {
-        socket.unbind();
+        net::packet_t<net::message_type::LeaveNotification> packet{};
+        if (tcp_socket.send(packet) != sf::Socket::Status::Done) {
+            spdlog::error("Failed to send LeaveNotification to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+        }
+        tcp_socket.disconnect();
+        udp_socket.unbind();
         spdlog::info("Client disconnected from server");
     }
 
     template<net::message_type Msg>
     void send(const net::packet_t<Msg>& packet)
     {
-        if (socket.send(packet, server_address, server_port) != sf::Socket::Status::Done) {
-            spdlog::error("Failed to send packet to server at {}:{}", server_address.toInteger(), server_port);
+        if (tcp_socket.send(packet) != sf::Socket::Status::Done) {
+            spdlog::error("Failed to send packet to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
         }
     }
 
@@ -61,13 +95,13 @@ public:
         uint16_t port{ 0 };
         net::packet_t packet{};
 
-        const auto status = socket.receive(packet, sender, port);
+        const auto status = udp_socket.receive(packet, sender, port);
         if (status == sf::Socket::Status::NotReady) { return std::optional{ receive_status::WouldBlock }; }
 
         if (status != sf::Socket::Status::Done) { return std::optional{ receive_status::Error }; }
 
         spdlog::info("Received {} bytes from {}:{}", packet.getDataSize(), sender ? sender->toInteger() : 0, port);
-        if (sender && *sender != server_address && port != server_port) {
+        if (sender && *sender != server_address && port != UDP_SERVER_PORT) {
             spdlog::warn("Received packet from unknown sender {}:{}", sender ? sender->toInteger() : 0, port);
             return std::optional{ receive_status::UnknownSender };
         }
