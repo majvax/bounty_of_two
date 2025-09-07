@@ -88,6 +88,7 @@ struct base_t
     uint16_t damage{ 0 };
     uint16_t ammo{ 0 };
     uint8_t z_index{ 0 };
+    uint8_t id{ 0 };
     enum_t flags{ 0 };
 
     [[nodiscard]] sf::FloatRect get_bounds() const { return { position, size }; }
@@ -128,7 +129,7 @@ struct base_t
         packet << to_float16(data.reload_time);
         packet << to_float16(data.scale);
 
-        return packet << data.health << data.damage << data.ammo << data.z_index << data.flags;
+        return packet << data.health << data.damage << data.ammo << data.z_index << data.id << data.flags;
     }
 
     friend sf::Packet& operator>>(sf::Packet& packet, base_t& data)
@@ -151,7 +152,7 @@ struct base_t
         data.scale = to_float(scale_h);
 
 
-        return packet >> data.health >> data.damage >> data.ammo >> data.z_index >> data.flags;
+        return packet >> data.health >> data.damage >> data.ammo >> data.z_index >> data.id >> data.flags;
     }
 };
 } // namespace details::entity

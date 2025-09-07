@@ -1,8 +1,8 @@
 #include "entities.hpp"
 #include "gamestate.hpp"
 #include "quadtree.hpp"
-#include "visitor.hpp"
 #include "visit.hpp"
+#include "visitor.hpp"
 
 
 void gamestate_t::update(float deltaTime)
@@ -25,12 +25,12 @@ void gamestate_t::update(float deltaTime)
 
         for (auto* other : potentialColliders) {
             if (other == entPtr) {
-                continue;// Skip self
+                continue; // Skip self
             }
 
             sf::FloatRect otherBounds = quadtree.getEntityBounds(*other);
             if (entBounds.findIntersection(otherBounds)) {
-                visit_ctx(make_visitor( [](auto& ent) { ent.add_flags(EntityFlags::Damaged); } ), *other);
+                visit_ctx(make_visitor([](auto& ent) { ent.add_flags(EntityFlags::Damaged); }), *other);
             }
         }
     }

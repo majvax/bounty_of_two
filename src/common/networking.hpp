@@ -33,6 +33,16 @@ enum struct message_type : uint8_t {
     PlayerInput,
 };
 
+enum struct input_type : uint8_t {
+    None = 0,
+    MoveUp = 1U << 0U,
+    MoveDown = 1U << 1U,
+    MoveLeft = 1U << 2U,
+    MoveRight = 1U << 3U,
+    Attack = 1U << 4U,
+    Reload = 1U << 5U,
+};
+
 
 struct header_t
 {
@@ -119,6 +129,20 @@ struct join_packet_t
     friend sf::Packet& operator>>(sf::Packet& packet, join_packet_t& data)
     {
         return packet >> data.udp_port >> data.player_name;
+    }
+};
+
+struct input_packet_t
+{
+    uint8_t input{ 0 };
+
+    friend sf::Packet& operator<<(sf::Packet& packet, const input_packet_t& data)
+    {
+        return packet << data.input;
+    }
+    friend sf::Packet& operator>>(sf::Packet& packet, input_packet_t& data)
+    {
+        return packet >> data.input;
     }
 };
 

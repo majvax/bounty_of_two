@@ -74,11 +74,32 @@ public:
         spdlog::info("Client disconnected from server");
     }
 
+    /**
+     * @brief send a message to the server using TCP
+     * 
+     * @tparam Msg 
+     * @param packet 
+     */
     template<net::message_type Msg>
-    void send(const net::packet_t<Msg>& packet)
+    void send_message(const net::packet_t<Msg>& packet)
     {
         if (tcp_socket.send(packet) != sf::Socket::Status::Done) {
             spdlog::error("Failed to send packet to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+        }
+    }
+
+    /**
+     * @brief send a message to the server using UDP
+     * 
+     * @tparam Msg 
+     * @param packet 
+     */
+    template<net::message_type Msg>
+    void send_data(net::packet_t<Msg>& packet)
+    {
+        auto status = udp_socket.send(packet, server_address, UDP_SERVER_PORT);
+        if (status != sf::Socket::Status::Done) {
+            spdlog::error("Failed to send packet to server at {}:{}", server_address.toInteger(), UDP_SERVER_PORT);
         }
     }
 

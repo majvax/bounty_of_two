@@ -1,49 +1,25 @@
 #pragma once
+#include "callback.hpp"
+#include "connection.hpp"
+#include "gamestate.hpp"
 #include "networking.hpp"
 #include <SFML/Network.hpp>
-#include <cstdint>
-#include <functional>
-#include <map>
-#include <vector>
 
 
 class Server
 {
-    struct connection_t
-    {
-        sf::TcpSocket socket;
-        uint32_t id{ 0 };
-        uint16_t udp_port{ 0 };
-        bool valid{ false };
-        bool authenticated{ false };
-
-
-        [[nodiscard]] sf::IpAddress get_address() const
-        {
-            if (auto addr = socket.getRemoteAddress()) { return *addr; }
-            return sf::IpAddress::Any;
-        }
-        [[nodiscard]] uint16_t get_port() const { return socket.getRemotePort(); }
-
-        bool operator==(const connection_t& other) const
-        {
-            return get_address() == other.get_address() && get_port() == other.get_port() && id == other.id;
-        }
-
-        explicit operator bool() const { return valid && authenticated && socket.getRemoteAddress(); }
-    };
-
     std::vector<connection_t> m_connections;
-    std::map<net::message_type, std::function<void(net::packet_t<>&, connection_t&)>> m_message_handlers;
+    std::map<net::message_type, std::function<void(Server*, callback_params_t)>> m_message_handlers;
 
     sf::UdpSocket m_data_socket;
     sf::TcpListener m_listener;
     sf::SocketSelector m_selector;
 
     void accept_new_connections();
-    void process_tcp_message(connection_t& conn);
-    void process_udp_message();
+    void process_tcp_message(connection_t& conn, gamestate_t& state);
+    void process_udp_message(gamestate_t& state);
     void setup_callbacks();
+
 public:
     Server() = default;
     ~Server() = default;
@@ -53,6 +29,13 @@ public:
     Server& operator=(Server&&) = delete;
 
     std::optional<std::string> init();
-    void recv();
+    void recv(gamestate_t& state);
     void send(const gamestate_t& state);
+    [[nodiscard]] const auto& get_connections() const { return m_connections; }
+    [[nodiscard]] auto& get_connections() { return m_connections; }
+    void remove_connection(sf::TcpSocket& socket, auto& iterator)
+    {
+        m_selector.remove(socket);
+        m_connections.erase(iterator);
+    }
 };

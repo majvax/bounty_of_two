@@ -45,17 +45,17 @@ void Server::accept_new_connections()
     }
 }
 
-void Server::recv()
+void Server::recv(gamestate_t& state)
 {
     constexpr auto TIMEOUT_MS = 5;
     if (m_selector.wait(sf::milliseconds(TIMEOUT_MS))) {
         if (m_selector.isReady(m_listener)) { accept_new_connections(); }
-        if (m_selector.isReady(m_data_socket)) { process_udp_message(); }
+        if (m_selector.isReady(m_data_socket)) { process_udp_message(state); }
 
 
         for (auto& conn : m_connections) {
             if (!conn.valid || !m_selector.isReady(conn.socket)) { continue; }
-            process_tcp_message(conn);
+            process_tcp_message(conn, state);
         }
     }
 }
@@ -84,7 +84,7 @@ void Server::send(const gamestate_t& state)
     }
 }
 
-void Server::process_tcp_message(connection_t& conn)
+void Server::process_tcp_message(connection_t& conn, gamestate_t& state)
 {
     net::packet_t packet{};
     auto status = conn.socket.receive(packet);
@@ -107,13 +107,13 @@ void Server::process_tcp_message(connection_t& conn)
 
     auto handler_it = m_message_handlers.find(header.type);
     if (handler_it != m_message_handlers.end()) {
-        handler_it->second(packet, conn);
+        handler_it->second(this, callback_params_t{ .packet = &packet, .conn = &conn, .state = &state });
     } else {
         spdlog::warn("No handler for message type: {}", static_cast<uint8_t>(header.type));
     }
 }
 
-void Server::process_udp_message()
+void Server::process_udp_message(gamestate_t& state)
 {
     std::optional<sf::IpAddress> sender;
     uint16_t port{ 0 };
@@ -140,8 +140,19 @@ void Server::process_udp_message()
 
     auto handler_it = m_message_handlers.find(header.type);
     if (handler_it != m_message_handlers.end()) {
-        handler_it->second(packet, *conn_it);
+        handler_it->second(this, callback_params_t{ .packet = &packet, .conn = &(*conn_it), .state = &state });
     } else {
         spdlog::warn("No handler for message type: {}", static_cast<uint8_t>(header.type));
     }
+}
+
+void Server::setup_callbacks()
+{
+    using enum net::message_type;
+    using namespace callbacks;
+
+    m_message_handlers[JoinNotification] = join_notification;
+    m_message_handlers[LeaveNotification] = leave_notification;
+    m_message_handlers[ChatMessage] = chat_message;
+    m_message_handlers[PlayerInput] = player_input;
 }

@@ -50,9 +50,40 @@ void TestScene::update(float deltaTime)
     }
 }
 
+
+
 void TestScene::handleEvent(const sf::Event& event)
 {
+    using net::input_type;
+
+
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
+        // TODO: refactor input handling to make automatic cast to underlying type
+        // and more convenient bitwise operations.
+        // FIXME: Currently only one input can be sent at a time due to the switch-case structure.
+        // This should be changed to allow multiple inputs to be sent in a single packet.
+        // e.g. pressing W and A at the same time should move the player diagonally
+        // For this I need to create a build_input_mask() function that is called every frame
+        // with a throttle to avoid spamming the server with packets. Using sfml isKeyPressed
+        // function to check the state of each key every frame and build the input mask accordingly.
+        uint8_t input = 0;
+        switch (key->scancode) {
+        case sf::Keyboard::Scan::W: input |= static_cast<uint8_t>(input_type::MoveUp) ; break;
+        case sf::Keyboard::Scan::A: input |= static_cast<uint8_t>(input_type::MoveLeft); break;
+        case sf::Keyboard::Scan::S: input |= static_cast<uint8_t>(input_type::MoveDown); break;
+        case sf::Keyboard::Scan::D: input |= static_cast<uint8_t>(input_type::MoveRight); break;
+        default:
+            break;
+        }
+
+        if (input != static_cast<uint8_t>(input_type::None)) {
+            net::packet_t<net::message_type::PlayerInput> packet;
+            packet << net::input_packet_t{ input };
+            client->send_data(packet);
+        }
+
+
+
         if (key->scancode == sf::Keyboard::Scan::Enter) {
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
             engine.clearScenes();
