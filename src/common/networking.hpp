@@ -144,14 +144,18 @@ template<message_type Msg = message_type::None>
 struct packet_t : sf::Packet
 {
     static constexpr message_type type = Msg;
+    bool compressed{ false };
 
     constexpr packet_t()
     {
         if constexpr (Msg != message_type::None) { *this << header_t{ .type = Msg }; }
     }
 
-    const void* onSend(std::size_t& size) override
+    void lazy_compression()
     {
+        if (compressed) { return; }
+        compressed = true;
+
         const auto bound = ZSTD_compressBound(getDataSize());
         std::vector<std::byte> compressed_data(bound);
 
@@ -160,13 +164,18 @@ struct packet_t : sf::Packet
 
         if (ZSTD_isError(csize)) {
             spdlog::error("ZSTD compression error: {}", ZSTD_getErrorName(csize));
-            size = getDataSize();
-            return getData();
+            return;
         }
 
         clear();
         append(compressed_data.data(), csize);
-        size = csize;
+        assert(getDataSize() == csize);
+    }
+
+    const void* onSend(std::size_t& size) override
+    {
+        lazy_compression();
+        size = getDataSize();
 
         spdlog::trace("Sending packet of size: {}", size);
         return getData();
