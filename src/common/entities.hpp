@@ -117,7 +117,7 @@ struct base_t
     // Maybe we should put the serialization operators in a separate file
     friend sf::Packet& operator<<(sf::Packet& packet, const base_t& data)
     {
-        // Vector2f automatically convects to half-float
+        // Vector2f automatically converts to half-float
         packet << data.position;
         packet << data.velocity;
         packet << data.acceleration;

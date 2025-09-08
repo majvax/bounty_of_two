@@ -7,7 +7,11 @@
 class TestScene : public SceneABC
 {
 private:
+    using input_enum_t = std::underlying_type_t<net::input_type>;
+
     gamestate_t state{};
+    static input_enum_t build_input_mask();
+    sf::Clock input_clock;
 
 public:
     explicit TestScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {};

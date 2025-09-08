@@ -9,7 +9,7 @@ void gamestate_t::update(float deltaTime)
 {
     for (auto& entity : entities) { visit_ctx(update_visitor, entity, deltaTime); }
 
-    sf::FloatRect worldBounds({ 0.f, 0.f }, { 1920.f, 1080.f });
+    sf::FloatRect worldBounds({ 0.F, 0.F }, { 1920.f, 1080.f });
     Quadtree quadtree(worldBounds);
 
     std::vector<entity_t*> entityPtrs;

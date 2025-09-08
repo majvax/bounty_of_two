@@ -29,6 +29,16 @@ void TestScene::render(sf::RenderTarget& target)
 
 void TestScene::update(float deltaTime)
 {
+    const auto input = build_input_mask();
+    constexpr int input_poll_rate = 1000 / 120;
+    if (input_clock.getElapsedTime().asMilliseconds() >= input_poll_rate) {
+        net::packet_t<net::message_type::PlayerInput> packet;
+        packet << net::input_packet_t{ static_cast<uint8_t>(input) };
+        client->send_data(packet);
+        input_clock.restart();
+    }
+
+
     const auto result = client->receive([this](net::message_type type, auto& packet) {
         switch (type) {
         case net::message_type::GameUpdate: {
@@ -58,32 +68,6 @@ void TestScene::handleEvent(const sf::Event& event)
 
 
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
-        // TODO: refactor input handling to make automatic cast to underlying type
-        // and more convenient bitwise operations.
-        // FIXME: Currently only one input can be sent at a time due to the switch-case structure.
-        // This should be changed to allow multiple inputs to be sent in a single packet.
-        // e.g. pressing W and A at the same time should move the player diagonally
-        // For this I need to create a build_input_mask() function that is called every frame
-        // with a throttle to avoid spamming the server with packets. Using sfml isKeyPressed
-        // function to check the state of each key every frame and build the input mask accordingly.
-        uint8_t input = 0;
-        switch (key->scancode) {
-        case sf::Keyboard::Scan::W: input |= static_cast<uint8_t>(input_type::MoveUp) ; break;
-        case sf::Keyboard::Scan::A: input |= static_cast<uint8_t>(input_type::MoveLeft); break;
-        case sf::Keyboard::Scan::S: input |= static_cast<uint8_t>(input_type::MoveDown); break;
-        case sf::Keyboard::Scan::D: input |= static_cast<uint8_t>(input_type::MoveRight); break;
-        default:
-            break;
-        }
-
-        if (input != static_cast<uint8_t>(input_type::None)) {
-            net::packet_t<net::message_type::PlayerInput> packet;
-            packet << net::input_packet_t{ input };
-            client->send_data(packet);
-        }
-
-
-
         if (key->scancode == sf::Keyboard::Scan::Enter) {
             spdlog::info("Enter key pressed, clearing scene and adding next scene");
             engine.clearScenes();
@@ -103,4 +87,19 @@ void TestScene::render_menu()
     ImGui::TextUnformatted(fps_text.c_str());
 
     ImGui::End();
+}
+
+
+auto TestScene::build_input_mask() -> input_enum_t
+{
+    auto input = static_cast<input_enum_t>(net::input_type::None);
+
+    using K = sf::Keyboard::Scan;
+    using T = net::input_type;
+
+    if (sf::Keyboard::isKeyPressed(K::W)) { input |= static_cast<input_enum_t>(T::MoveUp); }
+    if (sf::Keyboard::isKeyPressed(K::A)) { input |= static_cast<input_enum_t>(T::MoveLeft); }
+    if (sf::Keyboard::isKeyPressed(K::S)) { input |= static_cast<input_enum_t>(T::MoveDown); }
+    if (sf::Keyboard::isKeyPressed(K::D)) { input |= static_cast<input_enum_t>(T::MoveRight); }
+    return input;
 }

@@ -1,3 +1,4 @@
+#include "player.hpp"
 #include "server.hpp"
 #include "variant.hpp"
 #include <algorithm>
@@ -71,9 +72,7 @@ void leave_notification(Server* server, callback_params_t callback_params)
 
     // remove player from the game state
     auto entities_it = std::ranges::find_if(state.entities, [&conn](const auto& ent) {
-        if (auto player = std::get_if<player_t>(&ent)) {
-            return player->id == conn.id;
-        }
+        if (auto player = std::get_if<player_t>(&ent)) { return player->id == conn.id; }
         return false;
     });
 
@@ -125,8 +124,6 @@ void chat_message(Server* server, callback_params_t callback_params)
 void player_input(Server* /*server*/, callback_params_t callback_params)
 {
     auto [packet, conn, state] = *callback_params;
-    spdlog::info(
-      "PlayerInput message received from {}:{} aka {}", conn.get_address().toInteger(), conn.get_port(), conn.id);
     if (!conn) {
         spdlog::warn("Invalid connection tried to send PlayerInput");
         return;
@@ -140,19 +137,10 @@ void player_input(Server* /*server*/, callback_params_t callback_params)
 
 
     auto players = state.entities | variant::alt_view_v<player_t>;
-
-    const float speed = 200.F;
-    sf::Vector2f velocity{ 0.F, 0.F };
-    if ((input_packet.input & static_cast<uint8_t>(net::input_type::MoveUp)) != 0) { velocity.y -= speed; }
-    if ((input_packet.input & static_cast<uint8_t>(net::input_type::MoveDown)) != 0) { velocity.y += speed; }
-    if ((input_packet.input & static_cast<uint8_t>(net::input_type::MoveLeft)) != 0) { velocity.x -= speed; }
-    if ((input_packet.input & static_cast<uint8_t>(net::input_type::MoveRight)) != 0) { velocity.x += speed; }
-
     auto player_it = std::ranges::find_if(players, [&conn](const player_t& player) { return player.id == conn.id; });
     if (player_it != players.end()) {
         auto& player = *player_it;
-        spdlog::info("Updating player {} velocity to ({}, {})", player.id, velocity.x, velocity.y);
-        player.velocity = velocity;
+        update_velocity(player, input_packet);
     } else {
         spdlog::warn("Player entity not found for connection ID {}", conn.id);
     }

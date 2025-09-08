@@ -16,7 +16,7 @@ int main()
 
     sf::Clock clock;
     gamestate_t state;
-    sf::Clock send_clock; // throttle sends
+    sf::Clock send_clock;
 
     while (true) {
         server.recv(state);
