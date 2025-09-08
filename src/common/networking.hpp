@@ -136,14 +136,8 @@ struct input_packet_t
 {
     uint8_t input{ 0 };
 
-    friend sf::Packet& operator<<(sf::Packet& packet, const input_packet_t& data)
-    {
-        return packet << data.input;
-    }
-    friend sf::Packet& operator>>(sf::Packet& packet, input_packet_t& data)
-    {
-        return packet >> data.input;
-    }
+    friend sf::Packet& operator<<(sf::Packet& packet, const input_packet_t& data) { return packet << data.input; }
+    friend sf::Packet& operator>>(sf::Packet& packet, input_packet_t& data) { return packet >> data.input; }
 };
 
 template<message_type Msg = message_type::None>
@@ -151,10 +145,9 @@ struct packet_t : sf::Packet
 {
     static constexpr message_type type = Msg;
 
-    constexpr packet_t() : sf::Packet{}
+    constexpr packet_t()
     {
-        header_t header{ type };
-        *this << header;
+        if constexpr (Msg != message_type::None) { *this << header_t{ .type = Msg }; }
     }
 
     const void* onSend(std::size_t& size) override
@@ -170,7 +163,7 @@ struct packet_t : sf::Packet
             size = getDataSize();
             return getData();
         }
-        
+
         clear();
         append(compressed_data.data(), csize);
         size = csize;
@@ -181,6 +174,7 @@ struct packet_t : sf::Packet
 
     void onReceive(const void* data, std::size_t size) override
     {
+        clear();
 
         const auto osize = ZSTD_getFrameContentSize(data, size);
         if (osize == ZSTD_CONTENTSIZE_ERROR) {
