@@ -23,12 +23,7 @@ constexpr auto render_visitor = make_visitor([](const auto& entity, sf::RenderTa
 });
 
 
-GameScene::GameScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {
-    // not sure if this is the best way to get a sink from another logger
-    auto sink = spdlog::get("app")->sinks().front();
-    logger = std::make_shared<spdlog::logger>("game_scene", sink);
-    spdlog::register_logger(logger);
-}
+GameScene::GameScene(Engine& eng, Client* cli) : SceneABC(eng, cli) { logger = spdlog::get("game_scene"); }
 
 
 void GameScene::render(sf::RenderTarget& target)

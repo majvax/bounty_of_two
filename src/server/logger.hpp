@@ -5,7 +5,7 @@
 inline void init_loggers()
 {
     constexpr auto filename = "server.log";
-    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
+    auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename);
 
     auto app_logger = std::make_shared<spdlog::logger>("app", file_sink);
     spdlog::register_logger(app_logger);

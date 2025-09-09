@@ -15,4 +15,7 @@ inline void init_loggers()
 
     auto engine_logger = std::make_shared<spdlog::logger>("engine", file_sink);
     spdlog::register_logger(engine_logger);
+
+    auto game_logger = std::make_shared<spdlog::logger>("game_scene", file_sink);
+    spdlog::register_logger(game_logger);
 }
