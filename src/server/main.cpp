@@ -1,18 +1,21 @@
 #include "networking/server.hpp"
+#include "logger.hpp"
 
 constexpr auto SERVER_PORT = 54000;
 constexpr int SEND_INTERVAL_MS = 50;
 
 int main()
 {
+    init_loggers();
+
     spdlog::set_level(spdlog::level::info);
 
     Server server;
     if (auto err = server.init()) {
-        spdlog::critical("Server initialization failed: {}", *err);
+        spdlog::get("app")->critical("Server initialization failed: {}", *err);
         return -1;
     }
-    spdlog::info("Server started, waiting for data...");
+    spdlog::get("app")->info("Server started, waiting for data...");
 
     sf::Clock clock;
     gamestate_t state;
