@@ -2,10 +2,11 @@
 #include "network/client.hpp"
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
-
+#include "logger.hpp"
 
 int main()
 {
+    init_loggers();
     spdlog::set_level(spdlog::level::info);
 
     Engine engine;

@@ -4,7 +4,7 @@
 
 inline void init_loggers()
 {
-    constexpr auto filename = "server.log";
+    constexpr auto filename = "client.log";
     auto file_sink = std::make_shared<spdlog::sinks::basic_file_sink_mt>(filename, true);
 
     auto app_logger = std::make_shared<spdlog::logger>("app", file_sink);
@@ -13,6 +13,6 @@ inline void init_loggers()
     auto net_logger = std::make_shared<spdlog::logger>("network", file_sink);
     spdlog::register_logger(net_logger);
 
-    auto callback_logger = std::make_shared<spdlog::logger>("callback", file_sink);
-    spdlog::register_logger(callback_logger);
+    auto engine_logger = std::make_shared<spdlog::logger>("engine", file_sink);
+    spdlog::register_logger(engine_logger);
 }

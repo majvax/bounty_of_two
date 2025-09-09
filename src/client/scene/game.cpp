@@ -1,5 +1,6 @@
 #include "game.hpp"
 #include "imgui.h"
+#include "network/client.hpp"
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
 #include "visitor.hpp"
@@ -20,6 +21,14 @@ constexpr auto render_visitor = make_visitor([](const auto& entity, sf::RenderTa
     shape.setFillColor(col);
     target.draw(shape);
 });
+
+
+GameScene::GameScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {
+    // not sure if this is the best way to get a sink from another logger
+    auto sink = spdlog::get("app")->sinks().front();
+    logger = std::make_shared<spdlog::logger>("game_scene", sink);
+    spdlog::register_logger(logger);
+}
 
 
 void GameScene::render(sf::RenderTarget& target)
@@ -48,7 +57,7 @@ void GameScene::update(float deltaTime)
             break;
         }
         default:
-            spdlog::warn("Unknown message type received in GameScene: {}", static_cast<uint8_t>(type));
+            logger->warn("Unknown message type received in GameScene: {}", static_cast<uint8_t>(type));
             break;
         }
     });
@@ -61,7 +70,6 @@ void GameScene::update(float deltaTime)
 }
 
 
-
 void GameScene::handleEvent(const sf::Event& event)
 {
     using net::input_type;
@@ -69,7 +77,7 @@ void GameScene::handleEvent(const sf::Event& event)
 
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
         if (key->scancode == sf::Keyboard::Scan::Enter) {
-            spdlog::info("Enter key pressed, clearing scene and adding next scene");
+            logger->info("Enter key pressed, clearing scene and adding next scene");
             engine.clearScenes();
             engine.pushScene(std::make_unique<TitleScene>(engine, client));
             engine.pushScene(std::make_unique<SceneCube>(engine, client));

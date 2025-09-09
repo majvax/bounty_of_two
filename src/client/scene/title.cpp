@@ -17,7 +17,6 @@ TitleScene::TitleScene(Engine& eng, Client* cli)
 
 void TitleScene::update(float /*deltaTime*/)
 {
-
     constexpr float half = 0.5F;
     const auto bounds = titleText.getLocalBounds();
     const auto window_size = static_cast<sf::Vector2f>(engine.getWindow().getSize());
