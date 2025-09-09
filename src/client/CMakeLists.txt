@@ -1,9 +1,9 @@
-add_executable(client 
+add_executable(client
     main.cpp
     engine/engine.cpp
     scene/cube.cpp
     scene/title.cpp
-    scene/test.cpp
+    scene/game.cpp
 
     )
 
