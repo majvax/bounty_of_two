@@ -4,7 +4,7 @@
 #include "gamestate.hpp"
 
 
-class TestScene : public SceneABC
+class GameScene : public SceneABC
 {
 private:
     using input_enum_t = std::underlying_type_t<net::input_type>;
@@ -14,13 +14,13 @@ private:
     sf::Clock input_clock;
 
 public:
-    explicit TestScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {};
-    TestScene(const TestScene&) = delete;
-    TestScene& operator=(const TestScene&) = delete;
-    TestScene(TestScene&&) = delete;
-    TestScene& operator=(TestScene&&) = delete;
+    explicit GameScene(Engine& eng, Client* cli) : SceneABC(eng, cli) {};
+    GameScene(const GameScene&) = delete;
+    GameScene& operator=(const GameScene&) = delete;
+    GameScene(GameScene&&) = delete;
+    GameScene& operator=(GameScene&&) = delete;
 
-    ~TestScene() override = default;
+    ~GameScene() override = default;
 
     void update(float deltaTime) override;
     void render(sf::RenderTarget& target) override;

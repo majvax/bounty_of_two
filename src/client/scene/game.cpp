@@ -1,4 +1,4 @@
-#include "test.hpp"
+#include "game.hpp"
 #include "imgui.h"
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
@@ -22,12 +22,12 @@ constexpr auto render_visitor = make_visitor([](const auto& entity, sf::RenderTa
 });
 
 
-void TestScene::render(sf::RenderTarget& target)
+void GameScene::render(sf::RenderTarget& target)
 {
     for (const auto& entity : state.entities) { visit_ctx(render_visitor, entity, target); }
 }
 
-void TestScene::update(float deltaTime)
+void GameScene::update(float deltaTime)
 {
     const auto input = build_input_mask();
     constexpr int input_poll_rate = 1000 / 120;
@@ -48,7 +48,7 @@ void TestScene::update(float deltaTime)
             break;
         }
         default:
-            spdlog::warn("Unknown message type received in TestScene: {}", static_cast<uint8_t>(type));
+            spdlog::warn("Unknown message type received in GameScene: {}", static_cast<uint8_t>(type));
             break;
         }
     });
@@ -62,7 +62,7 @@ void TestScene::update(float deltaTime)
 
 
 
-void TestScene::handleEvent(const sf::Event& event)
+void GameScene::handleEvent(const sf::Event& event)
 {
     using net::input_type;
 
@@ -77,7 +77,7 @@ void TestScene::handleEvent(const sf::Event& event)
     }
 }
 
-void TestScene::render_menu()
+void GameScene::render_menu()
 {
     constexpr ImVec2 window_size = { 100, 100 };
     ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
@@ -90,7 +90,7 @@ void TestScene::render_menu()
 }
 
 
-auto TestScene::build_input_mask() -> input_enum_t
+auto GameScene::build_input_mask() -> input_enum_t
 {
     auto input = static_cast<input_enum_t>(net::input_type::None);
 
