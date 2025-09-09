@@ -121,7 +121,7 @@ public:
 
         if (status != sf::Socket::Status::Done) { return std::optional{ receive_status::Error }; }
 
-        logger->info("Received {} bytes from {}:{}", packet.getDataSize(), sender ? sender->toInteger() : 0, port);
+        logger->trace("Received {} bytes from {}:{}", packet.getDataSize(), sender ? sender->toInteger() : 0, port);
         if (sender && *sender != server_address && port != UDP_SERVER_PORT) {
             logger->warn("Received packet from unknown sender {}:{}", sender ? sender->toInteger() : 0, port);
             return std::optional{ receive_status::UnknownSender };
@@ -133,7 +133,7 @@ public:
             logger->error("Failed to extract header from packet");
             return std::optional{ receive_status::Error };
         }
-        logger->info("Received packet of type {} from server", static_cast<uint8_t>(header.type));
+        logger->trace("Received packet of type {} from server", static_cast<uint8_t>(header.type));
         handler(header.type, packet);
         return std::nullopt;
     }
