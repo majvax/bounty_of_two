@@ -169,7 +169,10 @@ struct packet_t : sf::Packet
 
         clear();
         append(compressed_data.data(), csize);
-        assert(getDataSize() == csize);
+        if (getDataSize() != csize) {
+            spdlog::error("Compressed data size mismatch: expected {}, got {}", csize, getDataSize());
+            return;
+        }
     }
 
     const void* onSend(std::size_t& size) override

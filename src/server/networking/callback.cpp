@@ -47,7 +47,7 @@ void join_notification(Server* server, callback_params_t callback_params)
     player.damage = 10;
     player.velocity = { 0.F, 0.F };
     state.entities.emplace_back(player);
-    logger->info("Added player entity with ID {} to game state", player.z_index);
+    logger->info("Added player entity with ID {} to game state", player.id);
 }
 
 void leave_notification(Server* server, callback_params_t callback_params)
