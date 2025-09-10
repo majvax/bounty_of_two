@@ -1,5 +1,7 @@
+#include "SFML/Network/IpAddress.hpp"
 #include "networking/server.hpp"
 #include "logger.hpp"
+#include <fmt/base.h>
 
 constexpr auto SERVER_PORT = 54000;
 constexpr int SEND_INTERVAL_MS = 50;
@@ -16,6 +18,7 @@ int main()
         return -1;
     }
     spdlog::get("app")->info("Server started, waiting for data...");
+    fmt::println("Listening on : {}", sf::IpAddress::getPublicAddress()->toString());
 
     sf::Clock clock;
     gamestate_t state;

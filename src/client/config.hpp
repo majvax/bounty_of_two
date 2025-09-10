@@ -6,7 +6,7 @@
 #include <string>
 #include "resources/font.hpp"
 #include <spdlog/spdlog.h>
- 
+
 
 struct Config
 {
@@ -40,6 +40,8 @@ struct Config
         is_font_loaded = true;
         return FontResult{ std::ref(default_font_) };
     }
+
+
 
   private:
     static inline bool is_font_loaded = false;

@@ -85,10 +85,10 @@ void GameScene::render_menu()
     constexpr ImVec2 window_size = { 100, 100 };
     ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
     ImGui::Begin("Main Window");
-
+    ImGui::PushFont(nullptr, 24.0F);
     std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
     ImGui::TextUnformatted(fps_text.c_str());
-
+    ImGui::PopFont();
     ImGui::End();
 }
 

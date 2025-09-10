@@ -4,6 +4,7 @@ add_executable(client
     scene/cube.cpp
     scene/title.cpp
     scene/game.cpp
+    scene/home.cpp
 
     )
 

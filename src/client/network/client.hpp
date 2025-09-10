@@ -1,4 +1,5 @@
 #pragma once
+#include "SFML/Network/IpAddress.hpp"
 #include "networking.hpp"
 #include <SFML/Network.hpp>
 #include <spdlog/spdlog.h>
@@ -16,7 +17,7 @@ class Client
     sf::TcpSocket tcp_socket;
     sf::UdpSocket udp_socket;
     sf::IpAddress server_address = sf::IpAddress::LocalHost;
-
+    bool is_connected = false;
 
 public:
     Client() { udp_socket.setBlocking(false); }
@@ -27,8 +28,18 @@ public:
     Client& operator=(Client&&) = delete;
 
 
-    bool connect()
+    bool connect(sf::IpAddress address = sf::IpAddress::LocalHost)
     {
+        if (server_address != address && is_connected)
+        {
+            spdlog::get("network")->info("Connecting to a different server, disconnecting from the current one first");
+            disconnect();
+        }
+        if (is_connected) {
+            spdlog::get("network")->warn("Client is already connected to a server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+            return true;
+        }
+        server_address = address;
         const auto logger = spdlog::get("network");
         auto status = tcp_socket.connect(server_address, TCP_SERVER_PORT);
         if (status != sf::Socket::Status::Done) {
@@ -56,6 +67,7 @@ public:
         }
 
         logger->info("JoinRequest sent to server at {}:{}", server_address.toInteger(), TCP_SERVER_PORT);
+        is_connected = true;
         return true;
     }
     void disconnect()
@@ -69,6 +81,7 @@ public:
         tcp_socket.disconnect();
         udp_socket.unbind();
         logger->info("Client disconnected from server");
+        is_connected = false;
     }
 
     /**

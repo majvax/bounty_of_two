@@ -41,6 +41,7 @@ public:
     void run();
     void process_deferred_task();
     void defer(std::move_only_function<void()> task) { deferred_tasks.emplace(std::move(task)); }
+    void close() { window.close(); }
 
     [[nodiscard]] const std::vector<std::unique_ptr<SceneABC>>& getScenes() const { return scenes_; }
     [[nodiscard]] std::vector<std::unique_ptr<SceneABC>>& getScenes() { return scenes_; }
