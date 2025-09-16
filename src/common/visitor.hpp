@@ -12,7 +12,6 @@ struct Overload : Callables...
     using Callables::operator()...;
 };
 
-
 template<typename Variant, typename... Extra>
 struct check_helper
 {
@@ -33,7 +32,7 @@ struct check_helper
     }
 };
 
-}// namespace details::visitor
+} // namespace details::visitor
 
 
 template<typename Variant, typename... Extra, typename... Callables>

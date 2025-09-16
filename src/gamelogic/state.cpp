@@ -1,15 +1,15 @@
 #include "entities.hpp"
 #include "gamestate.hpp"
 #include "quadtree.hpp"
-#include "visitor.hpp"
 #include "visit.hpp"
+#include "visitor.hpp"
 
 
 void gamestate_t::update(float deltaTime)
 {
     for (auto& entity : entities) { visit_ctx(update_visitor, entity, deltaTime); }
 
-    sf::FloatRect worldBounds({ 0.f, 0.f }, { 1920.f, 1080.f });
+    sf::FloatRect worldBounds({ 0.F, 0.F }, { 1920.f, 1080.f });
     Quadtree quadtree(worldBounds);
 
     std::vector<entity_t*> entityPtrs;
@@ -25,12 +25,12 @@ void gamestate_t::update(float deltaTime)
 
         for (auto* other : potentialColliders) {
             if (other == entPtr) {
-                continue;// Skip self
+                continue; // Skip self
             }
 
             sf::FloatRect otherBounds = quadtree.getEntityBounds(*other);
             if (entBounds.findIntersection(otherBounds)) {
-                visit_ctx(make_visitor( [](auto& ent) { ent.add_flags(EntityFlags::Damaged); } ), *other);
+                visit_ctx(make_visitor([](auto& ent) { ent.add_flags(EntityFlags::Damaged); }), *other);
             }
         }
     }

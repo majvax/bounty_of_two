@@ -4,9 +4,8 @@
 #include <expected>
 #include <functional>
 #include <string>
-#include "resources/font.hpp"
 #include <spdlog/spdlog.h>
- 
+#include <resources.hpp>
 
 struct Config
 {
@@ -33,6 +32,7 @@ struct Config
     {
         if (is_font_loaded) { return FontResult{ std::ref(default_font_) }; }
         spdlog::info("Loading default font");
+        auto nunito = resources::get_nunito();
         if (!default_font_.openFromMemory(nunito.data(), nunito.size())) {
             return std::unexpected(std::string("Failed to load default font from: "));
         }
@@ -40,6 +40,8 @@ struct Config
         is_font_loaded = true;
         return FontResult{ std::ref(default_font_) };
     }
+
+
 
   private:
     static inline bool is_font_loaded = false;

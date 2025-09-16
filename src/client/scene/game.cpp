@@ -1,5 +1,6 @@
-#include "test.hpp"
+#include "game.hpp"
 #include "imgui.h"
+#include "network/client.hpp"
 #include "scene/cube.hpp"
 #include "scene/title.hpp"
 #include "visitor.hpp"
@@ -22,13 +23,26 @@ constexpr auto render_visitor = make_visitor([](const auto& entity, sf::RenderTa
 });
 
 
-void TestScene::render(sf::RenderTarget& target)
+GameScene::GameScene(Engine& eng, Client* cli) : SceneABC(eng, cli) { logger = spdlog::get("game_scene"); }
+
+
+void GameScene::render(sf::RenderTarget& target)
 {
     for (const auto& entity : state.entities) { visit_ctx(render_visitor, entity, target); }
 }
 
-void TestScene::update(float deltaTime)
+void GameScene::update(float deltaTime)
 {
+    const auto input = build_input_mask();
+    constexpr int input_poll_rate = 1000 / 120;
+    if (input_clock.getElapsedTime().asMilliseconds() >= input_poll_rate) {
+        net::packet_t<net::message_type::PlayerInput> packet;
+        packet << net::input_packet_t{ static_cast<uint8_t>(input) };
+        client->send_data(packet);
+        input_clock.restart();
+    }
+
+
     const auto result = client->receive([this](net::message_type type, auto& packet) {
         switch (type) {
         case net::message_type::GameUpdate: {
@@ -38,7 +52,7 @@ void TestScene::update(float deltaTime)
             break;
         }
         default:
-            spdlog::warn("Unknown message type received in TestScene: {}", static_cast<uint8_t>(type));
+            logger->warn("Unknown message type received in GameScene: {}", static_cast<uint8_t>(type));
             break;
         }
     });
@@ -50,11 +64,15 @@ void TestScene::update(float deltaTime)
     }
 }
 
-void TestScene::handleEvent(const sf::Event& event)
+
+void GameScene::handleEvent(const sf::Event& event)
 {
+    using net::input_type;
+
+
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
         if (key->scancode == sf::Keyboard::Scan::Enter) {
-            spdlog::info("Enter key pressed, clearing scene and adding next scene");
+            logger->info("Enter key pressed, clearing scene and adding next scene");
             engine.clearScenes();
             engine.pushScene(std::make_unique<TitleScene>(engine, client));
             engine.pushScene(std::make_unique<SceneCube>(engine, client));
@@ -62,14 +80,29 @@ void TestScene::handleEvent(const sf::Event& event)
     }
 }
 
-void TestScene::render_menu()
+void GameScene::render_menu()
 {
     constexpr ImVec2 window_size = { 100, 100 };
     ImGui::SetNextWindowSize(window_size, ImGuiCond_Once);
     ImGui::Begin("Main Window");
-
+    ImGui::PushFont(nullptr, 24.0F);
     std::string fps_text = "FPS: " + std::to_string(ImGui::GetIO().Framerate);
     ImGui::TextUnformatted(fps_text.c_str());
-
+    ImGui::PopFont();
     ImGui::End();
+}
+
+
+auto GameScene::build_input_mask() -> input_enum_t
+{
+    auto input = static_cast<input_enum_t>(net::input_type::None);
+
+    using K = sf::Keyboard::Scan;
+    using T = net::input_type;
+
+    if (sf::Keyboard::isKeyPressed(K::W)) { input |= static_cast<input_enum_t>(T::MoveUp); }
+    if (sf::Keyboard::isKeyPressed(K::A)) { input |= static_cast<input_enum_t>(T::MoveLeft); }
+    if (sf::Keyboard::isKeyPressed(K::S)) { input |= static_cast<input_enum_t>(T::MoveDown); }
+    if (sf::Keyboard::isKeyPressed(K::D)) { input |= static_cast<input_enum_t>(T::MoveRight); }
+    return input;
 }

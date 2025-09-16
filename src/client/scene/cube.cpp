@@ -1,11 +1,10 @@
 #include "cube.hpp"
-#include "scene/test.hpp"
+#include "scene/game.hpp"
 #include <array>
 #include <cmath>
 #include <imgui.h>
 #include <memory>
 #include <numbers>
-#include <spdlog/spdlog.h>
 
 constexpr std::array<sf::Vector3f, 8> cube_vertices = { { { -1, -1, -1 },
   { 1, -1, -1 },
@@ -135,10 +134,8 @@ void SceneCube::handleEvent(const sf::Event& event)
 {
     if (const auto* key = event.getIf<sf::Event::KeyPressed>()) {
         if (key->scancode == sf::Keyboard::Scan::Enter) {
-            spdlog::info("Enter key pressed, clearing scene and adding next scene");
-
             engine.clearScenes();
-            engine.pushScene(std::make_unique<TestScene>(engine, client));
+            engine.pushScene(std::make_unique<GameScene>(engine, client));
         }
     }
 }

@@ -1,6 +1,8 @@
 #include "engine.hpp"
+#include "imgui-SFML.h"
 #include "imgui.h"
 #include "scene/base.hpp"
+#include <resources.hpp>
 
 Engine::Engine()
   : window(sf::VideoMode::getDesktopMode(), "bounty_of_two", sf::Style::Default, sf::State::Fullscreen, ctxSetting)
@@ -9,8 +11,15 @@ Engine::Engine()
 
     window.setVerticalSyncEnabled(false);
     window.setFramerateLimit(target_framerate);
-    if (!ImGui::SFML::Init(window)) { spdlog::error("Failed to initialize ImGui-SFML"); }
+    if (!ImGui::SFML::Init(window)) { spdlog::get("engine")->error("Failed to initialize ImGui-SFML"); }
     ImGui::GetIO().IniFilename = nullptr;
+    auto& imgui_io = ImGui::GetIO();
+    ImFontConfig cfg;
+    cfg.FontDataOwnedByAtlas = false;
+    // This is not ub since imgui doesn't own the data. We only need it for the legacy api.
+    auto nunito = resources::legacy_get_nunito();
+    imgui_io.FontDefault =
+      imgui_io.Fonts->AddFontFromMemoryTTF(nunito.data(), static_cast<int>(nunito.size()), 0.0F, &cfg);
 };
 
 Engine::~Engine() { ImGui::SFML::Shutdown(); }
@@ -18,11 +27,12 @@ Engine::~Engine() { ImGui::SFML::Shutdown(); }
 void Engine::pushScene(std::unique_ptr<SceneABC> scene)
 {
     defer([this, scene = std::move(scene)]() mutable {
+        const auto logger = spdlog::get("engine");
         if (!scene) {
-            spdlog::error("Attempted to push a null scene");
+            logger->error("Attempted to push a null scene");
             return;
         }
-        spdlog::info("Pushing scene: {}", typeid(scene).name());
+        logger->info("Pushing scene: {}", typeid(scene).name());
         scenes_.emplace_back(std::move(scene));
         scenes_.back()->init();
     });
@@ -31,13 +41,14 @@ void Engine::pushScene(std::unique_ptr<SceneABC> scene)
 void Engine::popScene()
 {
     defer([this]() {
+        const auto logger = spdlog::get("engine");
         if (scenes_.empty()) {
-            spdlog::warn("Attempted to pop a scene from an empty stack");
+            logger->warn("Attempted to pop a scene from an empty stack");
             return;
         }
 
         const auto& scene = *scenes_.back();
-        spdlog::info("Popping scene: {}", typeid(scene).name());
+        logger->info("Popping scene: {}", typeid(scene).name());
         scenes_.pop_back();
     });
 }
@@ -45,12 +56,13 @@ void Engine::popScene()
 void Engine::clearScenes()
 {
     defer([this]() {
+        const auto logger = spdlog::get("engine");
         if (scenes_.empty()) {
-            spdlog::warn("Attempted to clear an empty scene stack");
+            logger->warn("Attempted to clear an empty scene stack");
             return;
         }
 
-        spdlog::info("Clearing all scenes");
+        logger->info("Clearing all scenes");
         scenes_.clear();
     });
 }
@@ -69,7 +81,7 @@ void Engine::render(sf::RenderTarget& target)
 void Engine::render_menu()
 {
     if (scenes_.empty()) {
-        spdlog::warn("No scenes to render menu for");
+        spdlog::get("engine")->warn("No scenes to render menu for");
         return;
     }
 
@@ -79,7 +91,7 @@ void Engine::render_menu()
 void Engine::handleEvent(const sf::Event& event)
 {
     if (scenes_.empty()) {
-        spdlog::warn("No scenes to handle event for");
+        spdlog::get("engine")->warn("No scenes to handle event for");
         return;
     }
     scenes_.back()->handleEvent(event);
@@ -88,6 +100,7 @@ void Engine::handleEvent(const sf::Event& event)
 
 void Engine::run()
 {
+    const auto logger = spdlog::get("engine");
     sf::Clock clock;
 
     while (window.isOpen()) {
@@ -98,12 +111,12 @@ void Engine::run()
             ImGui::SFML::ProcessEvent(window, *event);
 
             if (event->is<sf::Event::Closed>()) {
-                spdlog::info("Closing window");
+                logger->info("Closing window");
                 window.close();
             }
             if (const auto* key = event->getIf<sf::Event::KeyPressed>()) {
                 if (key->scancode == sf::Keyboard::Scan::Escape) {
-                    spdlog::info("Escape key pressed, closing window");
+                    logger->info("Escape key pressed, closing window");
                     window.close();
                 }
             }

@@ -14,6 +14,6 @@ public:
     void update(float deltaTime) override;
     void render(sf::RenderTarget& target) override { target.draw(titleText); }
     void handleEvent(const sf::Event&  /*event*/) override {}
-    void render_menu() override {}
+    void render_menu() override{};
     void init() override {}
 };

@@ -34,5 +34,4 @@ constexpr auto update_visitor = make_unique_visitor<entity_t, float>(
   [](player_t& ent, float deltaTime) {
       if (ent.has_flag(EntityFlags::Damaged)) { ent.clear_flags(EntityFlags::Damaged); }
       ent.position += ent.velocity * deltaTime;
-      reset(ent);
   });
