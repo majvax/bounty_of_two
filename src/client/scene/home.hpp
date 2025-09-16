@@ -23,7 +23,7 @@ struct MenuItem
     }
 };
 
-template<std::size_t Size>
+template<std::uint8_t Size>
 struct Menu
 {
     std::array<MenuItem, Size> items;
@@ -65,7 +65,7 @@ private:
     void update_layout();
     void host_callback();
     void join_callback();
-    auto mouse_hover(const sf::Vector2f& mouse_pos) const -> std::optional<std::size_t>;
+    auto mouse_hover(const sf::Vector2f& mouse_pos) const -> std::optional<std::uint8_t>;
 public:
     HomeScene(Engine& eng, Client* cli);
 

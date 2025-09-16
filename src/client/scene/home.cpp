@@ -214,7 +214,7 @@ void HomeScene::render_menu()
 }
 
 
-std::optional<std::size_t> HomeScene::mouse_hover(const sf::Vector2f& mouse_pos) const
+std::optional<std::uint8_t> HomeScene::mouse_hover(const sf::Vector2f& mouse_pos) const
 {
     for (auto [index, item] : menu.items | std::views::enumerate) {
         if (item.text) {
