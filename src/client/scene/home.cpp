@@ -59,7 +59,8 @@ void HomeScene::update_layout()
     if (selected_item.text) {
         auto bounds = selected_item.text->getGlobalBounds().size;
         menu.selection_rect.setSize({ bounds.x + 100.F, bounds.y + 40.0F });
-        menu.selection_rect.setOrigin({ menu.selection_rect.getSize().x / 2.f, (menu.selection_rect.getSize().y - 25.0F) / 2.f });
+        menu.selection_rect.setOrigin(
+          { menu.selection_rect.getSize().x / 2.f, (menu.selection_rect.getSize().y - 25.0F) / 2.f });
         menu.selection_rect.setPosition(selected_item.text->getPosition());
     }
 
@@ -187,7 +188,7 @@ void HomeScene::render_menu()
     ImGui::PushFont(nullptr, font_size);
 
     ImGui::TextUnformatted("server ip address : ");
-    const auto width = ImGui::GetFont()->CalcTextSizeA(font_size, FLT_MAX, 0.0F, "888").x;
+    const auto width = ImGui::GetFont()->CalcTextSizeA(font_size, FLT_MAX, 0.0F, "888").x + 10;
 
     for (auto [index, elem] : server_ip | std::views::enumerate) {
         if (index != 0) {

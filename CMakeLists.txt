@@ -3,7 +3,7 @@ include(cmake/warning.cmake)
 
 
 if (NOT DEFINED CMAKE_CXX_STANDARD)
-    set(CMAKE_CXX_STANDARD 23)
+    set(CMAKE_CXX_STANDARD 26)
 endif()
 
 set(CMAKE_CXX_EXTENSIONS OFF)

@@ -1,9 +1,8 @@
 #include "engine.hpp"
 #include "imgui-SFML.h"
 #include "imgui.h"
-#include "resources/font.hpp"
 #include "scene/base.hpp"
-#include <misc/freetype/imgui_freetype.h>
+#include <resources.hpp>
 
 Engine::Engine()
   : window(sf::VideoMode::getDesktopMode(), "bounty_of_two", sf::Style::Default, sf::State::Fullscreen, ctxSetting)
@@ -17,14 +16,10 @@ Engine::Engine()
     auto& imgui_io = ImGui::GetIO();
     ImFontConfig cfg;
     cfg.FontDataOwnedByAtlas = false;
-    cfg.SizePixels = 42.0F;
-    cfg.OversampleH = 2;
-    cfg.OversampleV = 1;
-    cfg.FontLoaderFlags = ImGuiFreeTypeBuilderFlags_LightHinting;
     // This is not ub since imgui doesn't own the data. We only need it for the legacy api.
-    // NOLINTNEXTLINE(cppcoreguidelines-pro-type-const-cast)
-    imgui_io.FontDefault = imgui_io.Fonts->AddFontFromMemoryTTF(const_cast<std::byte*>(nunito.data()), nunito_size, cfg.SizePixels, &cfg);
-    if (!ImGui::SFML::UpdateFontTexture()) { spdlog::get("engine")->error("Failed to update the font texture"); }
+    auto nunito = resources::legacy_get_nunito();
+    imgui_io.FontDefault =
+      imgui_io.Fonts->AddFontFromMemoryTTF(nunito.data(), static_cast<int>(nunito.size()), 0.0F, &cfg);
 };
 
 Engine::~Engine() { ImGui::SFML::Shutdown(); }

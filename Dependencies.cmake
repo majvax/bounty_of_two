@@ -7,12 +7,6 @@ cpmaddpackage("gh:fmtlib/fmt#11.2.0")
 
 cpmaddpackage(URI "gh:gabime/spdlog@1.15.3" OPTIONS "SPDLOG_FMT_EXTERNAL ON")
 
-# cpmaddpackage(
-#     NAME freetype
-#     GIT_TAG VER-2-14-0
-#     GITHUB_REPOSITORY freetype/freetype
-# )
-
 cpmaddpackage(
     NAME sfml
     GIT_TAG 3.0.1
@@ -22,7 +16,7 @@ cpmaddpackage(
     "SFML_BUILD_TESTING OFF"
 )
 
-cpmaddpackage(URI "gh:ocornut/imgui@1.92.0" DOWNLOAD_ONLY)
+cpmaddpackage(URI "gh:ocornut/imgui@1.92.2b" DOWNLOAD_ONLY)
 add_library(imgui STATIC
   "${imgui_SOURCE_DIR}/imgui.cpp"
   "${imgui_SOURCE_DIR}/imgui_draw.cpp"
@@ -30,16 +24,14 @@ add_library(imgui STATIC
   "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
   "${imgui_SOURCE_DIR}/imgui_demo.cpp"
   "${imgui_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
-  "${imgui_SOURCE_DIR}/misc/freetype/imgui_freetype.cpp"
 )
-target_include_directories(imgui SYSTEM PUBLIC "${imgui_SOURCE_DIR}" "${FREETYPE_INCLUDE_DIR_freetype2}")
-target_compile_definitions(imgui PRIVATE IMGUI_ENABLE_FREETYPE)
-target_link_libraries(imgui PRIVATE SFML::Graphics)
+target_include_directories(imgui SYSTEM PUBLIC "${imgui_SOURCE_DIR}")
+TARGET_COMPILE_DEFINITIONS(imgui PRIVATE IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
 
 cpmaddpackage(
     NAME imgui-sfml
     GITHUB_REPOSITORY majvax/imgui-sfml
-    GIT_TAG b1900f4ffe25c995a54551baf809139e4b09c7e3
+    GIT_TAG 44ac8a212e7f818a19e3b7323428af452408fab5
     OPTIONS
     "IMGUI_SFML_FIND_SFML OFF"
     "IMGUI_DIR ${imgui_SOURCE_DIR}"
